@@ -1,0 +1,940 @@
+<!-- <------------------------------------------------
+      THE ULTIMATE MEAL PLANNER
+      FILE: index.html
+      VERSION: 1.00
+      CREDITS: Tre Thacker ~ 2026
+      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+
+      HTML CHANGELOG:
+      VERSION 1.00 - Initial HTML foundation created.
+     ------------------------------------------------->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- <------------------------------------------------
+			DOCUMENT SETUP
+		 ------------------------------------------------->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- <------------------------------------------------
+			APP TITLE AND PWA CONNECTION
+		 ------------------------------------------------->
+  <title>The Ultimate Meal Planner</title>
+  <meta name="description" content="Offline monthly meal calendar, recipe planner, shopping list, and print-ready meal planning app.">
+  <meta name="theme-color" content="#2f5f9f">
+  <link rel="manifest" href="manifest.json">
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+<!-- <------------------------------------------------
+			CSS FILE CONNECTION
+		 ------------------------------------------------->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<!-- <------------------------------------------------
+			MAIN APP SHELL
+		 ------------------------------------------------->
+  <div class="app-shell" id="appShell">
+
+<!-- <------------------------------------------------
+			MAIN CONTENT AREA
+		 ------------------------------------------------->
+    <main class="app-main">
+		
+<!-- <------------------------------------------------
+      RIGHT SIDE PANCAKE MENU SYSTEM
+     ------------------------------------------------->
+
+<button
+  type="button"
+  id="menuToggleButton"
+  class="menu-toggle-button"
+  aria-label="Open menu"
+>
+  ☰
+</button>
+
+<aside
+  class="pancake-menu"
+  id="pancakeMenu"
+  aria-label="Application menu"
+>
+
+  <div class="pancake-menu-content">
+
+    <button
+      type="button"
+      class="menu-text-option"
+      id="menuPrintButton"
+    >
+      Print
+    </button>
+
+    <button
+      type="button"
+      class="menu-text-option"
+      id="menuRecipeBoxButton"
+    >
+      Recipe Box
+    </button>
+
+    <button
+      type="button"
+      class="menu-text-option"
+      id="menuAdminButton"
+    >
+      Admin
+    </button>
+
+		<button
+			type="button"
+			class="menu-text-option"
+			id="menuThemeButton"
+		>
+			Theme
+		</button>
+
+		<button
+			type="button"
+			class="menu-text-option"
+			id="toggleDarkModeButton"
+		>
+			Dark Mode: OFF
+		</button>
+
+		<button
+			type="button"
+			class="menu-text-option"
+			id="menuAboutButton"
+		>
+			About
+		</button>
+
+		<button
+			type="button"
+			class="menu-text-option"
+			id="menuHelpButton"
+		>
+			Help
+		</button>
+
+  </div>
+
+</aside>		
+
+<!-- <------------------------------------------------
+			CALENDAR DISPLAY AREA
+		 ------------------------------------------------->
+
+<!-- <------------------------------------------------
+      LEFT RECIPE ASSIGNMENT PANEL
+     ------------------------------------------------->
+
+<aside
+  class="assignment-panel"
+  id="assignmentPanel"
+  aria-label="Recipe assignment panel"
+>
+
+  <button
+    type="button"
+    class="assignment-panel-close-button"
+    id="closeAssignmentPanelButton"
+    aria-label="Close recipe assignment panel"
+  >
+    ←
+  </button>
+
+  <div class="assignment-panel-content">
+
+    <h2 id="assignmentPanelTitle">
+      Assign Meals
+    </h2>
+		
+		<div class="assignment-panel-divider" aria-hidden="true"></div>	
+
+		<div class="assignment-action-row">
+
+			<div class="assignment-action-stack">
+
+				<button
+					type="button"
+					class="app-button secondary-button assignment-small-button"
+					id="openRandomizeButton"
+				>
+					Randomize
+				</button>
+
+				<button
+					type="button"
+					class="app-button secondary-button assignment-small-button"
+					id="clearCalendarMonthButton"
+				>
+					Clear
+				</button>
+
+			</div>
+
+			<div
+				class="assignment-trash-dropzone"
+				id="assignmentTrashDropzone"
+				aria-label="Drag calendar recipes here to remove them"
+				title="Drag calendar recipes here to remove them"
+			>
+				<span class="assignment-trash-icon" aria-hidden="true">🗑</span>
+				<span class="assignment-trash-label">Trash</span>
+			</div>
+
+		</div>
+		
+		<div class="assignment-panel-divider" aria-hidden="true"></div>
+
+		<div class="assignment-filter-group">
+
+			<div class="assignment-filter-header">
+
+				<h3>Filter Meals</h3>
+
+				<button
+					type="button"
+					class="assignment-filter-toggle"
+					id="assignmentFilterToggleButton"
+					aria-label="Collapse recipe filters"
+				>
+					▼
+				</button>
+
+			</div>
+
+			<div class="assignment-filter-options" id="assignmentFilterOptions">
+
+				<label class="checkbox-option">
+					<input type="checkbox" class="assignment-filter-checkbox" value="Breakfast" checked>
+					Breakfast
+				</label>
+
+				<label class="checkbox-option">
+					<input type="checkbox" class="assignment-filter-checkbox" value="Lunch" checked>
+					Lunch
+				</label>
+
+				<label class="checkbox-option">
+					<input type="checkbox" class="assignment-filter-checkbox" value="Dinner" checked>
+					Dinner
+				</label>
+
+				<label class="checkbox-option">
+					<input type="checkbox" class="assignment-filter-checkbox" value="Snack/Dessert" checked>
+					Snack/Dessert
+				</label>
+
+			</div>
+
+		</div>
+
+		<div class="assignment-panel-divider" aria-hidden="true"></div>
+
+		<div
+			class="assignment-recipe-list"
+			id="assignmentRecipeList"
+			aria-label="Draggable recipe list"
+		>
+		</div>
+		
+		<div class="assignment-panel-divider" aria-hidden="true"></div>
+
+	</div>
+
+</aside>		 
+		 
+	<section class="calendar-section" aria-label="Monthly meal calendar">
+		<div class="calendar-print-header">
+			<h2 id="printCalendarName">My Meal Planner</h2>
+			<h3 id="printMonthYear">Month Year</h3>
+		</div>
+
+	<div class="calendar-screen-header">
+	
+<!-- <------------------------------------------------
+      THEME CALENDAR ICON
+     ------------------------------------------------->
+
+	<div
+		id="themeCalendarIcon"
+		class="theme-calendar-icon"
+		aria-hidden="true"
+	>
+		💎
+	</div>	
+	
+		<input
+			type="text"
+			id="calendarNameInput"
+			class="calendar-title-input"
+			value="The Ultimate Meal Planner"
+			maxlength="80"
+			autocomplete="off"
+			aria-label="Calendar title"
+		>
+
+  <div class="calendar-header-row">
+    <div class="calendar-month-year-controls">
+      <select id="monthSelect" class="calendar-month-select" aria-label="Month">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+
+      <input
+        type="number"
+        id="yearInput"
+        class="calendar-year-input"
+        min="1900"
+        max="2200"
+        step="1"
+        aria-label="Year"
+      >
+    </div>
+
+<!-- <------------------------------------------------
+      AUTO SAVE TOAST MESSAGE
+     ------------------------------------------------->
+
+		<div
+			class="auto-save-toast"
+			id="autoSaveToast"
+			aria-live="polite"
+		>
+			Auto-saved!
+		</div>
+
+    <div class="calendar-toolbar-actions">
+      <button type="button" class="app-button secondary-button" id="saveMonthButton">
+        Save
+      </button>
+
+      <button type="button" class="app-button secondary-button" id="todayMonthButton">
+        Today
+      </button>
+
+      <button type="button" class="app-button secondary-button" id="previousMonthButton">
+        Previous
+      </button>
+
+      <button type="button" class="app-button secondary-button" id="nextMonthButton">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+			<div class="calendar-weekday-row" aria-label="Calendar weekdays">
+				<div class="weekday-cell">Sunday</div>
+				<div class="weekday-cell">Monday</div>
+				<div class="weekday-cell">Tuesday</div>
+				<div class="weekday-cell">Wednesday</div>
+				<div class="weekday-cell">Thursday</div>
+				<div class="weekday-cell">Friday</div>
+				<div class="weekday-cell">Saturday</div>
+			</div>
+
+			<div class="calendar-grid" id="calendarGrid" aria-label="Calendar grid">
+				<!-- Calendar cells are created by JavaScript. -->
+			</div>
+		</section>
+
+	</main>
+</div>
+
+<!-- <------------------------------------------------
+      ADMIN PANEL WINDOW
+     ------------------------------------------------->
+<dialog class="admin-dialog" id="adminDialog">
+  <form method="dialog" class="admin-dialog-content">
+    <header class="dialog-header">
+      <h2>Admin Panel</h2>
+      <button type="submit" class="dialog-close-button safe-button" id="closeAdminDialog">
+        Exit
+      </button>
+    </header>
+
+    <div class="admin-button-list">
+
+      <button type="button" class="app-button secondary-button" id="importDatabaseButton">
+        Import Backup
+      </button>
+			
+<!-- <------------------------------------------------
+			BACKUP IMPORT FILE INPUT
+			------------------------------------------------->
+
+			<input
+				type="file"
+				id="importDatabaseFileInput"
+				accept=".json,application/json"
+				hidden
+			>
+
+      <button type="button" class="app-button secondary-button" id="exportDatabaseButton">
+        Export Full Backup
+      </button>
+
+      <button type="button" class="app-button secondary-button" id="exportCalendarCsvButton">
+        Export Calendar CSV
+      </button>
+
+      <button type="button" class="app-button danger-button" id="wipeDatabaseButton">
+        Wipe Database
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<!-- <------------------------------------------------
+      WIPE DATABASE FIRST WARNING WINDOW
+     ------------------------------------------------->
+<dialog class="wipe-dialog" id="wipeDatabaseDialog">
+  <form method="dialog" class="wipe-dialog-content" id="wipeDatabaseForm">
+    <header class="dialog-header">
+      <h2>Wipe Database Warning</h2>
+      <button type="button" class="dialog-close-button safe-button" id="exitWipeDatabaseButton">
+        Exit
+      </button>
+    </header>
+
+    <p class="danger-text">
+      This action is irreversible. It will permanently erase all saved calendar data, recipes, settings, shopping lists, themes, and backups stored inside this app on this device.
+    </p>
+
+    <div class="control-group">
+      <label for="wipeDatabasePhraseInput">
+        Type CLEAR THE DATABASE to continue.
+      </label>
+      <input
+        type="text"
+        id="wipeDatabasePhraseInput"
+        class="text-input danger-input"
+        autocomplete="off"
+      >
+    </div>
+
+    <button type="submit" class="app-button danger-button">
+      Submit
+    </button>
+  </form>
+</dialog>
+
+<!-- <------------------------------------------------
+      WIPE DATABASE FINAL WARNING WINDOW
+     ------------------------------------------------->
+<dialog class="wipe-dialog" id="wipeDatabaseFinalDialog">
+  <form method="dialog" class="wipe-dialog-content">
+    <header class="dialog-header">
+      <h2>Final Warning</h2>
+    </header>
+
+    <p class="danger-text final-warning-text">
+      ARE YOU 100% SURE? DID YOU BACKUP YOUR DATABASE FIRST?
+    </p>
+
+    <div class="button-row">
+      <button type="button" class="app-button safe-button" id="backupBeforeWipeButton">
+        BACKUP DATA
+      </button>
+
+      <button type="button" class="app-button danger-button" id="confirmWipeDatabaseButton">
+        YES! ERASE MY DATABASE
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<!-- <------------------------------------------------
+      CALENDAR SLOT CHOICE WINDOW
+     ------------------------------------------------->
+
+<dialog class="slot-choice-dialog" id="slotChoiceDialog">
+
+	<div class="slot-choice-dialog-content">
+
+		<header class="dialog-header">
+
+			<h2>Choose Meal Slot</h2>
+
+			<button
+				type="button"
+				class="dialog-close-button"
+				id="cancelSlotChoiceButton"
+			>
+				Cancel
+			</button>
+
+		</header>
+
+		<p class="panel-note" id="slotChoiceMessage">
+			Choose where this recipe should go.
+		</p>
+
+		<div
+			class="slot-choice-options"
+			id="slotChoiceOptions"
+			aria-label="Meal slot choices"
+		>
+		</div>
+
+	</div>
+
+</dialog>
+
+<!-- <------------------------------------------------
+      RANDOMIZE CALENDAR WINDOW
+     ------------------------------------------------->
+
+<dialog class="randomize-dialog" id="randomizeDialog">
+  <form method="dialog" class="randomize-dialog-content" id="randomizeForm">
+    <header class="dialog-header">
+      <h2>Randomize Calendar</h2>
+
+      <button type="button" class="dialog-close-button" id="closeRandomizeButton">
+        Close
+      </button>
+    </header>
+
+    <p class="panel-note">
+      Choose which recipe categories should be randomly placed into the current calendar.
+    </p>
+
+    <div class="category-options randomize-category-options">
+      <label class="checkbox-option">
+        <input type="checkbox" class="randomize-category-checkbox" value="Breakfast">
+        Breakfast
+      </label>
+
+      <label class="checkbox-option">
+        <input type="checkbox" class="randomize-category-checkbox" value="Lunch">
+        Lunch
+      </label>
+
+      <label class="checkbox-option">
+        <input type="checkbox" class="randomize-category-checkbox" value="Dinner" checked>
+        Dinner
+      </label>
+
+      <label class="checkbox-option">
+        <input type="checkbox" class="randomize-category-checkbox" value="Snack/Dessert">
+        Snack/Dessert
+      </label>
+    </div>
+
+    <div class="button-row">
+      <button type="submit" class="app-button primary-button" id="confirmRandomizeButton">
+        Randomize
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<!-- <------------------------------------------------
+      RECIPE BOX WINDOW
+     ------------------------------------------------->
+
+<dialog class="recipe-box-dialog" id="recipeBoxDialog">
+
+  <div class="recipe-box-content">
+
+    <header class="dialog-header">
+
+      <h2>Recipe Box</h2>
+
+      <button
+        type="button"
+        class="dialog-close-button"
+        id="closeRecipeBoxButton"
+      >
+        Close
+      </button>
+
+    </header>
+
+    <div class="recipe-box-filter-row">
+
+      <label for="recipeBoxFilterSelect">
+        Category Filter
+      </label>
+
+      <select
+        id="recipeBoxFilterSelect"
+        class="select-input"
+      >
+
+        <option value="ALL">
+          All Recipes
+        </option>
+
+        <option value="Breakfast">
+          Breakfast
+        </option>
+
+        <option value="Lunch">
+          Lunch
+        </option>
+
+        <option value="Dinner">
+          Dinner
+        </option>
+
+        <option value="Snack/Dessert">
+          Snack/Dessert
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="button-row">
+
+      <button
+        type="button"
+        class="app-button primary-button"
+        id="recipeBoxAddRecipeButton"
+      >
+        Add Recipe
+      </button>
+
+    </div>
+
+    <div
+      class="recipe-box-list"
+      id="recipeBoxList"
+      aria-label="Recipe Box recipe list"
+    >
+    </div>
+
+  </div>
+
+</dialog>
+
+<!-- <------------------------------------------------
+      RECIPE READ ONLY VIEW WINDOW
+     ------------------------------------------------->
+
+<dialog class="recipe-view-dialog" id="recipeViewDialog">
+
+  <div class="recipe-view-content">
+
+    <header class="dialog-header">
+      <h2 id="recipeViewTitle">Recipe</h2>
+
+      <button
+        type="button"
+        class="dialog-close-button"
+        id="closeRecipeViewButton"
+      >
+        Close
+      </button>
+    </header>
+
+    <p class="recipe-view-description" id="recipeViewDescription"></p>
+
+    <p class="recipe-view-categories" id="recipeViewCategories"></p>
+
+    <section class="recipe-view-section">
+      <h3>Ingredients</h3>
+      <div id="recipeViewIngredients"></div>
+    </section>
+
+    <section class="recipe-view-section">
+      <h3>Instructions</h3>
+      <p id="recipeViewInstructions"></p>
+    </section>
+
+    <section class="recipe-view-section">
+      <h3>Source</h3>
+      <p id="recipeViewSource"></p>
+    </section>
+
+    <div class="button-row">
+      <button
+        type="button"
+        class="app-button secondary-button"
+        id="editViewedRecipeButton"
+      >
+        Edit
+      </button>
+
+      <button
+        type="button"
+        class="app-button secondary-button"
+        id="shareViewedRecipeButton"
+      >
+        Share
+      </button>
+    </div>
+
+  </div>
+
+</dialog>
+
+<!-- <------------------------------------------------
+      ADD EDIT RECIPE WINDOW
+     ------------------------------------------------->
+<dialog class="recipe-dialog" id="recipeDialog">
+  <form method="dialog" class="recipe-dialog-content" id="recipeForm">
+    <header class="dialog-header">
+      <h2 id="recipeDialogTitle">Recipe Card</h2>
+      <button type="button" class="dialog-close-button" id="cancelRecipeButton">
+        Cancel
+      </button>
+    </header>
+
+    <input type="hidden" id="recipeIdInput">
+
+    <div class="control-group">
+      <label for="recipeTitleInput">Recipe Name</label>
+      <input
+				type="text"
+				id="recipeTitleInput"
+				class="text-input"
+				maxlength="15"
+				required
+			>
+    </div>
+
+<!-- <------------------------------------------------
+      RECIPE DESCRIPTION FIELD
+     ------------------------------------------------->
+
+		<div class="control-group">
+			<label for="recipeDescriptionInput">Description</label>
+			<textarea
+				id="recipeDescriptionInput"
+				class="text-area"
+				rows="3"
+				maxlength="500"
+				placeholder="Optional description. This only appears inside the recipe card/view."
+			></textarea>
+		</div>
+
+    <div class="control-group">
+      <label>Meal Categories</label>
+
+      <div class="category-options">
+        <label class="checkbox-option">
+          <input type="checkbox" class="recipe-category-checkbox" value="Breakfast">
+          Breakfast
+        </label>
+
+        <label class="checkbox-option">
+          <input type="checkbox" class="recipe-category-checkbox" value="Lunch">
+          Lunch
+        </label>
+
+        <label class="checkbox-option">
+          <input type="checkbox" class="recipe-category-checkbox" value="Dinner" checked>
+          Dinner
+        </label>
+
+        <label class="checkbox-option">
+          <input type="checkbox" class="recipe-category-checkbox" value="Snack/Dessert">
+          Snack/Dessert
+        </label>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="recipeIngredientsInput">Ingredients</label>
+      <textarea
+        id="recipeIngredientsInput"
+        class="text-area"
+        rows="6"
+        placeholder="Enter one ingredient per line."
+      ></textarea>
+    </div>
+
+    <div class="control-group">
+      <label for="recipeInstructionsInput">Instructions</label>
+      <textarea
+        id="recipeInstructionsInput"
+        class="text-area"
+        rows="6"
+        placeholder="Optional recipe instructions."
+      ></textarea>
+    </div>
+
+    <div class="control-group">
+      <label for="recipeSourceUrlInput">Source URL</label>
+      <input
+        type="url"
+        id="recipeSourceUrlInput"
+        class="text-input"
+        placeholder="Optional recipe website link."
+      >
+    </div>
+
+    <div class="button-row">
+      <button type="submit" class="app-button primary-button" id="saveRecipeButton">
+        Save Recipe
+      </button>
+
+      <button type="button" class="app-button secondary-button" id="deleteRecipeButton">
+        Delete
+      </button>
+    </div>
+  </form>
+</dialog>
+
+<!-- <------------------------------------------------
+			THEME AND FONT SETTINGS WINDOW PLACEHOLDER
+		 ------------------------------------------------->
+<dialog class="settings-dialog" id="themeFontDialog">
+	<form method="dialog" class="settings-dialog-content">
+		<header class="dialog-header">
+			<h2>Theme Settings</h2>
+			<button type="submit" class="dialog-close-button" id="closeThemeFontDialog">
+				Close
+			</button>
+		</header>
+
+		<p class="panel-note">
+			Choose a color theme for the app.
+		</p>
+		
+		<p class="panel-note">
+			Customize the calendar title, month/year, and day number fonts.
+		<div class="control-group">
+			<label for="themePresetSelect">Theme</label>
+
+			<select
+				id="themePresetSelect"
+				class="select-input"
+			>
+				<option value="berry-purple">Berry Purple</option>
+				<option value="classic-blue">Classic Blue</option>
+				<option value="cranberry-red">Cranberry Red</option>
+				<option value="dandelion-yellow">Dandelion Yellow</option>
+				<option value="flamingo-pink">Flamingo Pink</option>
+				<option value="fireworks">Fireworks</option>
+				<option value="forest-green">Forest Green</option>
+				<option value="holiday">Holiday</option>				
+				<option value="precious-metals">Precious Metals</option>
+				<option value="stormy-grey">Stormy Grey</option>
+				<option value="sunset-orange">Sunset Orange</option>
+				<option value="tropical-beach">Tropical Beach</option>
+			</select>
+		</div>
+		
+<!-- <------------------------------------------------
+	    CALENDAR FONT CONTROL
+     ------------------------------------------------->
+
+		<div class="control-group">
+
+			<label for="calendarFontSelect">
+				Calendar Font
+			</label>
+
+			<select
+				id="calendarFontSelect"
+				class="select-input"
+			>
+				<option value="Arial, Helvetica, sans-serif">Arial</option>
+				<option value="Georgia, serif">Georgia</option>
+				<option value="&quot;Times New Roman&quot;, Times, serif">Times New Roman</option>
+				<option value="&quot;Trebuchet MS&quot;, Arial, sans-serif">Trebuchet MS</option>
+				<option value="Verdana, Geneva, sans-serif">Verdana</option>
+				<option value="&quot;Courier New&quot;, Courier, monospace">Courier New</option>
+				<option value="&quot;Comic Sans MS&quot;, cursive, sans-serif">Comic Sans MS</option>
+			</select>
+
+		</div>
+
+	</form>
+</dialog>
+
+<!-- <------------------------------------------------
+			HELP WINDOW PLACEHOLDER
+		 ------------------------------------------------->
+<dialog class="help-dialog" id="helpDialog">
+	<form method="dialog" class="help-dialog-content">
+		<header class="dialog-header">
+			<h2>Help</h2>
+			<button type="submit" class="dialog-close-button" id="closeHelpDialog">
+				Close
+			</button>
+		</header>
+
+		<section class="help-section">
+			<h3>Getting Started</h3>
+			<p>
+				This Help section will explain each part of the app in simple step-by-step instructions.
+			</p>
+		</section>
+
+		<section class="help-section">
+			<h3>Planned Help Topics</h3>
+			<ul>
+				<li>Creating a monthly meal calendar</li>
+				<li>Adding and removing meal categories</li>
+				<li>Adding meals and recipes</li>
+				<li>Randomizing a calendar</li>
+				<li>Printing a one-page landscape calendar</li>
+				<li>Exporting a full backup</li>
+				<li>Importing a backup on another device</li>
+				<li>Sharing one recipe</li>
+				<li>Importing one recipe</li>
+				<li>Using the shopping list</li>
+				<li>Using the app offline</li>
+				<li>Changing themes and fonts</li>
+			</ul>
+		</section>
+	</form>
+</dialog>
+
+<!-- <------------------------------------------------
+			ABOUT WINDOW PLACEHOLDER
+		 ------------------------------------------------->
+<dialog class="about-dialog" id="aboutDialog">
+	<form method="dialog" class="about-dialog-content">
+		<header class="dialog-header about-dialog-header">
+			<img
+				src="image/tump-icon.png"
+				alt="Ultimate Meal Planner Icon"
+				class="about-app-icon"
+			>
+
+			<h2>About</h2>
+
+			<button type="submit" class="dialog-close-button" id="closeAboutDialog">
+				Close
+			</button>
+		</header>
+
+		<div class="about-card">
+			<h3 id="aboutAppTitle">The Ultimate Meal Planner</h3>
+			<p><strong>Version:</strong> <span id="aboutAppVersion">1.00</span></p>
+			<p><strong>Credits:</strong> <span id="aboutAppCredits">Tre Thacker ~ 2026</span></p>
+			<p class="dedication-line" id="aboutAppDedication">
+				~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+			</p>
+		</div>
+	</form>
+</dialog>
+
+<!-- <------------------------------------------------
+			JAVASCRIPT FILE CONNECTION
+		 ------------------------------------------------->
+  <script src="app.js"></script>
+</body>
+</html>

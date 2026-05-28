@@ -1,0 +1,2148 @@
+/* <------------------------------------------------
+      THE ULTIMATE MEAL PLANNER
+      FILE: styles.css
+      VERSION: 1.00
+      CREDITS: Tre Thacker ~ 2026
+      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+
+      CSS CHANGELOG:
+      VERSION 1.00 - Initial CSS foundation created.
+   -------------------------------------------------> */
+
+/* <------------------------------------------------
+      ROOT VARIABLES / DEFAULT THEME FOUNDATION
+   -------------------------------------------------> */
+
+:root {
+
+  /* Theme Colors */
+
+  --theme-primary: #2f5f9f;
+  --theme-secondary: #5d87c0;
+  --theme-accent: #1d3f6a;
+	
+	--theme-panel-tint: rgba(47,95,159,0.08);
+	--theme-window-tint: rgba(47,95,159,0.12);
+
+  /* Light Mode */
+
+  --app-background: #f4f7fb;
+  --panel-background: #ffffff;
+  --border-color: #cfd8e3;
+
+  /* Text */
+
+  --text-primary: #222222;
+  --text-secondary: #555555;
+	
+	/* Calendar Font Variables */
+
+	--calendar-title-font: Arial, Helvetica, sans-serif;
+	--calendar-month-font: Arial, Helvetica, sans-serif;
+	--calendar-day-number-font: Arial, Helvetica, sans-serif;
+
+  /* Buttons */
+
+  --button-text: #ffffff;
+
+  /* Layout */
+
+  --border-radius: 10px;
+  --panel-gap: 18px;
+	
+	--frosted-window-background: var(--theme-window-tint);
+  --frosted-window-blur: blur(16px);
+
+}
+
+/* <------------------------------------------------
+      GLOBAL RESET
+   -------------------------------------------------> */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* <------------------------------------------------
+      HTML / BODY FOUNDATION
+   -------------------------------------------------> */
+
+html {
+  font-size: 16px;
+}
+
+body {
+
+  background: var(--app-background);
+  color: var(--text-primary);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  line-height: 1.4;
+
+}
+
+/* <------------------------------------------------
+      MAIN APP SHELL
+   -------------------------------------------------> */
+
+.app-shell {
+
+  width: 100%;
+  max-width: 1800px;
+
+  margin: 0 auto;
+  padding: 20px;
+
+}
+
+/* <------------------------------------------------
+      HEADER AREA
+   -------------------------------------------------> */
+
+.app-header {
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  margin-bottom: 24px;
+
+  padding: 18px;
+
+  background: var(--panel-background);
+
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+
+}
+
+.app-title-group h1 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 8px;
+
+}
+
+.app-subtitle,
+#appSubtitle {
+
+  color: var(--text-secondary);
+
+}
+
+.header-actions {
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+}
+
+/* <------------------------------------------------
+      MAIN CONTENT LAYOUT
+   -------------------------------------------------> */
+
+.app-main {
+
+  display: grid;
+  gap: var(--panel-gap);
+
+}
+
+/* <------------------------------------------------
+      PANEL FOUNDATION
+   -------------------------------------------------> */
+
+	.calendar-section {
+
+	background:
+		linear-gradient(
+			var(--theme-panel-tint),
+			var(--theme-panel-tint)
+		),
+		var(--panel-background);
+
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+
+  padding: 18px;
+
+}
+
+/* <------------------------------------------------
+      INPUTS / SELECTS
+   -------------------------------------------------> */
+
+.text-input,
+.select-input,
+.text-area {
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 1rem;
+
+}
+
+.text-area {
+
+  resize: vertical;
+  min-height: 100px;
+
+}
+
+.control-group {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+}
+
+.control-row {
+
+  display: grid;
+  grid-template-columns: 1fr 160px;
+
+  gap: 14px;
+
+  margin-top: 16px;
+
+}
+
+/* <------------------------------------------------
+      BUTTON SYSTEM
+   -------------------------------------------------> */
+
+.app-button {
+
+  cursor: pointer;
+
+  border: none;
+  border-radius: 8px;
+
+  padding: 10px 16px;
+
+  font-size: 0.95rem;
+
+  transition:
+    background 0.20s ease,
+    transform 0.15s ease;
+
+}
+
+.app-button:hover {
+
+  transform: translateY(-1px);
+
+}
+
+.primary-button {
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+}
+
+.secondary-button {
+
+  background: var(--theme-secondary);
+  color: var(--button-text);
+
+}
+
+.danger-button {
+
+  background: #b00020;
+  color: #ffffff;
+
+}
+
+.safe-button {
+
+  background: #1f7a3a;
+  color: #ffffff;
+
+}
+
+.button-row {
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 18px;
+
+}
+
+/* <------------------------------------------------
+      CATEGORY CHECKBOX AREA
+   -------------------------------------------------> */
+
+.category-options {
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-top: 4px;
+
+}
+
+.checkbox-option {
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+}
+
+/* <------------------------------------------------
+      CALENDAR SCREEN HEADER
+   -------------------------------------------------> */
+
+.calendar-screen-header {
+	
+	position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-bottom: 18px;
+
+}
+
+/* <------------------------------------------------
+      THEME CALENDAR ICON
+   -------------------------------------------------> */
+
+.theme-calendar-icon {
+
+  position: absolute;
+
+  left: -20px;
+  top: -24px;
+
+  z-index: 2;
+
+  width: 150px;
+  height: 150px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 7rem;
+  line-height: 1;
+
+  pointer-events: none;
+  user-select: none;
+
+}
+
+.calendar-header-row {
+
+  padding-left: 155px;
+
+}
+
+.calendar-title-input {
+
+  width: 100%;
+
+  border: none;
+  background: transparent;
+
+  color: var(--theme-primary);
+	
+	font-family: var(--calendar-title-font);
+
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-align: center;
+
+  outline: none;
+
+}
+
+.calendar-title-input:focus {
+
+  border-bottom: 2px solid var(--theme-primary);
+
+}
+
+/* <------------------------------------------------
+      AUTO SAVE TOAST MESSAGE
+   -------------------------------------------------> */
+
+.auto-save-toast {
+
+  display: inline-flex;
+
+  justify-content: center;
+  align-items: center;
+
+  min-width: 145px;
+
+  padding: 8px 16px;
+
+  border: 3px solid #d00000;
+  border-radius: 14px;
+
+  background: rgba(255, 0, 0, 0.10);
+
+  color: #d00000;
+
+  font-size: 1.05rem;
+  font-weight: 800;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transition: opacity 0.22s ease;
+
+}
+
+.auto-save-toast.visible {
+
+  opacity: 1;
+
+}
+
+.calendar-header-row {
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 14px;
+
+}
+
+.calendar-month-year-controls {
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  gap: 8px;
+
+}
+
+.calendar-month-select,
+.calendar-year-input {
+
+  padding: 8px 10px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+
+  background: var(--panel-background);
+  color: var(--text-primary);
+
+  font-size: 1rem;
+	
+	font-family: var(--calendar-title-font);
+
+}
+
+.calendar-year-input {
+
+  width: 110px;
+
+}
+
+.calendar-toolbar-actions {
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+}
+
+/* <------------------------------------------------
+      CALENDAR WEEKDAY ROW
+   -------------------------------------------------> */
+
+.calendar-weekday-row {
+
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+
+  border-radius: 8px 8px 0 0;
+
+  overflow: hidden;
+
+}
+
+.weekday-cell {
+
+  padding: 10px 6px;
+
+  color: var(--button-text);
+  background: var(--theme-primary);
+
+  font-weight: 700;
+  text-align: center;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+
+}
+
+.weekday-cell:last-child {
+
+  border-right: none;
+
+}
+
+/* <------------------------------------------------
+      CALENDAR GRID FOUNDATION
+   -------------------------------------------------> */
+
+.calendar-grid {
+
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, minmax(95px, 1fr));
+
+  min-height: 570px;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 0 0 8px 8px;
+
+  overflow: hidden;
+
+}
+
+/* <------------------------------------------------
+      CALENDAR DAY CELL FOUNDATION
+   -------------------------------------------------> */
+
+.calendar-day-cell {
+
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+  min-height: 95px;
+	height: auto;
+
+  padding: 6px;
+
+  background: var(--panel-background);
+
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+
+}
+
+.calendar-day-cell:nth-child(7n) {
+
+  border-right: none;
+
+}
+
+.calendar-day-cell:nth-last-child(-n + 7) {
+
+  border-bottom: none;
+
+}
+
+.calendar-day-cell.inactive-day {
+
+  background: #eeeeee;
+
+  color: #777777;
+
+}
+
+.day-number {
+
+  color: var(--theme-accent);
+	
+	font-family: var(--calendar-title-font);
+
+  font-weight: 700;
+
+  margin-bottom: 6px;
+
+}
+
+/* <------------------------------------------------
+      CALENDAR DRAG DROP HOVER FEEDBACK
+   -------------------------------------------------> */
+
+.calendar-day-cell.drag-over-day {
+
+  outline: 3px dashed var(--theme-primary);
+  outline-offset: -5px;
+
+  background: rgba(47, 95, 159, 0.08);
+
+}
+
+/* <------------------------------------------------
+      CALENDAR MEAL DISPLAY LIST
+   -------------------------------------------------> */
+
+.calendar-meal-display-list {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-height: 0;
+
+  overflow: hidden;
+
+}
+
+.calendar-meal-name {
+
+  cursor: grab;
+
+  color: var(--theme-accent);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 0.82rem;
+  line-height: 1.15;
+
+  overflow: hidden;
+  text-overflow: clip;
+
+}
+
+body.dark-mode .calendar-meal-name {
+
+  color: var(--theme-secondary);
+
+  font-weight: 700;
+
+}
+
+.calendar-meal-name:active {
+
+  cursor: grabbing;
+
+}
+
+.calendar-meal-name.dragging-calendar-recipe {
+
+  opacity: 0.45;
+
+  outline: 1px dashed var(--theme-primary);
+  outline-offset: 2px;
+
+}
+
+/* <------------------------------------------------
+      PRINT HEADER FOUNDATION
+   -------------------------------------------------> */
+
+.calendar-print-header {
+
+  display: none;
+
+}
+
+/* <------------------------------------------------
+      RECIPE LIST RESPONSIVE GRID
+   -------------------------------------------------> */
+
+.recipe-list {
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+
+  gap: 14px;
+
+}
+
+.recipe-card {
+
+  min-width: 0;
+
+  padding: 14px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: var(--panel-background);
+
+  overflow: hidden;
+
+}
+
+.recipe-card h3 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 8px;
+
+  overflow-wrap: break-word;
+
+}
+
+.recipe-category-text {
+
+  color: var(--text-secondary);
+
+  margin-bottom: 10px;
+
+  overflow-wrap: break-word;
+
+}
+
+/* <------------------------------------------------
+      PANEL HEADER
+   -------------------------------------------------> */
+
+.panel-header {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 14px;
+
+}
+
+.panel-note {
+
+  color: var(--text-secondary);
+
+}
+
+/* <------------------------------------------------
+      DIALOG FOUNDATION
+   -------------------------------------------------> */
+
+.settings-dialog,
+.help-dialog {
+
+  width: min(900px, 95vw);
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+}
+
+.settings-dialog {
+
+  width: min(460px, 92vw);
+
+}
+
+.about-dialog {
+
+  width: min(500px, 92vw);
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+	
+	background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);	
+
+}
+
+.recipe-dialog {
+
+  width: min(720px, 92vw);
+  max-height: 82vh;
+
+  position: fixed;
+  inset: 52% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 12px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+	
+	background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);	
+
+}
+
+.settings-dialog-content,
+.help-dialog-content,
+.about-dialog-content {
+
+  padding: 28px;
+
+}
+
+.recipe-dialog-content {
+
+  padding: 18px;
+
+}
+
+.dialog-header {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 20px;
+
+}
+
+/* <------------------------------------------------
+      ABOUT DIALOG CENTERED HEADER
+   -------------------------------------------------> */
+
+.about-dialog .dialog-header {
+
+  justify-content: center;
+
+  position: relative;
+
+}
+
+.about-dialog-header {
+
+  min-height: 82px;
+
+}
+
+.about-app-icon {
+
+  position: absolute;
+
+  left: -78px;
+  top: -78px;
+
+  width: 250px;
+  height: 250px;
+
+  object-fit: contain;
+
+}
+
+.dialog-close-button {
+
+  cursor: pointer;
+
+  padding: 8px 12px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+  font-weight: 700;
+
+}
+
+/* <------------------------------------------------
+      ABOUT DIALOG CLOSE BUTTON POSITION
+   -------------------------------------------------> */
+
+.about-dialog .dialog-close-button {
+
+  position: absolute;
+
+  top: 0;
+  right: 0;
+
+}
+
+.help-section {
+
+  margin-bottom: 22px;
+
+}
+
+.help-section h3 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 10px;
+
+}
+
+.about-card {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  padding-top: 8px;
+
+  text-align: center;
+  align-items: center;
+
+}
+
+.dedication-line {
+
+  color: var(--theme-accent);
+
+  font-style: italic;
+
+  font-size: 0.88rem;
+  line-height: 1.45;
+
+  margin-top: 10px;
+
+  white-space: nowrap;
+
+}
+
+body.dark-mode .dedication-line {
+
+  color: var(--theme-secondary);
+
+  font-weight: 700;
+
+}
+
+/* <------------------------------------------------
+      RECIPE BOX WINDOW
+   -------------------------------------------------> */
+
+.recipe-box-dialog {
+
+  width: min(760px, 94vw);
+  max-height: 78vh;
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+.recipe-box-content {
+
+  padding: 22px;
+
+}
+
+.recipe-box-filter-row {
+
+  display: grid;
+  grid-template-columns: 160px 1fr;
+
+  gap: 12px;
+
+  align-items: center;
+
+  margin-bottom: 16px;
+
+}
+
+.recipe-box-list {
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 132px);
+
+  gap: 10px;
+
+  max-height: min(46vh, 288px);
+
+  margin-top: 16px;
+  padding-right: 6px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-gutter: stable;
+
+  -webkit-overflow-scrolling: touch;
+
+}
+
+.recipe-card {
+
+  cursor: pointer;
+
+  width: 132px;
+  min-height: 122px;
+
+  padding: 8px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: var(--panel-background);
+
+  overflow: hidden;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.14s ease;
+
+}
+
+.recipe-card:hover {
+
+  border-color: var(--theme-primary);
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.14);
+
+  transform: translateY(-2px);
+
+}
+
+.recipe-card h3 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 7px;
+
+  font-size: 0.95rem;
+  line-height: 1.15;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+.recipe-category-text {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 1px;
+
+  color: var(--text-secondary);
+
+  font-size: 0.78rem;
+  line-height: 1.12;
+
+  margin-bottom: 0;
+
+}
+
+.recipe-category-text span {
+
+  display: block;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+/* <------------------------------------------------
+      CALENDAR SLOT CHOICE WINDOW
+   -------------------------------------------------> */
+
+.slot-choice-dialog {
+
+  width: min(520px, 92vw);
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+.slot-choice-dialog-content {
+
+  padding: 22px;
+
+}
+
+.slot-choice-options {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin-top: 16px;
+
+}
+
+.slot-choice-option-button {
+
+  cursor: pointer;
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: 2px solid var(--theme-primary);
+  border-radius: 10px;
+
+  background: transparent;
+  color: var(--theme-primary);
+
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+
+}
+
+.slot-choice-option-button:hover {
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+}
+
+/* <------------------------------------------------
+      RANDOMIZE CALENDAR WINDOW
+   -------------------------------------------------> */
+
+.randomize-dialog {
+
+  width: min(520px, 92vw);
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+.randomize-dialog-content {
+
+  padding: 22px;
+
+}
+
+.randomize-category-options {
+
+  margin-top: 18px;
+  margin-bottom: 8px;
+
+}
+
+/* <------------------------------------------------
+      ADMIN PANEL AND WIPE DATABASE WINDOWS
+   -------------------------------------------------> */
+		 
+/* <------------------------------------------------
+      RECIPE READ ONLY VIEW WINDOW
+   -------------------------------------------------> */
+
+.recipe-view-dialog {
+
+  width: min(680px, 92vw);
+  max-height: 84vh;
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+.recipe-view-content {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  padding: 22px;
+
+}
+
+.recipe-view-description {
+
+  color: var(--text-secondary);
+
+  margin-bottom: 12px;
+
+}
+
+.recipe-view-categories {
+
+  color: var(--theme-primary);
+
+  font-weight: 700;
+
+  margin-bottom: 16px;
+
+}
+
+.recipe-view-section {
+
+  padding: 12px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+}
+
+.recipe-view-section h3 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 8px;
+
+}		 
+
+.admin-dialog,
+.wipe-dialog {
+
+  width: min(420px, 92vw);
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid #b00020;
+  border-radius: 12px;
+
+  padding: 14px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+	
+	background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);	
+
+}
+
+.admin-dialog-content,
+.wipe-dialog-content {
+
+  padding: 22px;
+
+}
+
+.admin-dialog h2,
+.wipe-dialog h2,
+.danger-text {
+
+  color: #b00020;
+
+}
+
+.admin-button-list {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+}
+
+.danger-input {
+
+  border: 2px solid #b00020;
+
+}
+
+.final-warning-text {
+
+  font-weight: 700;
+  text-align: center;
+
+  margin-bottom: 18px;
+
+}
+
+/* <------------------------------------------------
+      VISUAL DARK MODE FOUNDATION
+      DEVICE DISPLAY ONLY
+   -------------------------------------------------> */
+
+body.dark-mode {
+
+  --app-background: #121212;
+  --panel-background: #1d1d1d;
+
+  --border-color: #444444;
+
+  --text-primary: #f1f1f1;
+  --text-secondary: #bbbbbb;
+
+  --frosted-window-background: rgba(25, 25, 25, 0.24);
+
+}
+
+body.dark-mode dialog,
+body.dark-mode .pancake-menu {
+
+  color: var(--text-primary);
+
+}
+
+body.dark-mode .panel-note,
+body.dark-mode .recipe-view-description,
+body.dark-mode .recipe-category-text {
+
+  color: var(--text-secondary);
+
+}
+
+body.dark-mode .text-input,
+body.dark-mode .select-input,
+body.dark-mode .text-area {
+
+  background: #1d1d1d;
+
+  color: var(--text-primary);
+
+}
+
+
+
+body.dark-mode .calendar-grid .calendar-day-cell.inactive-day {
+
+  background: #232323 !important;
+
+  color: #8e8e8e !important;
+
+}
+
+body.dark-mode .day-number {
+
+  color: var(--theme-secondary);
+
+  font-size: 1.05rem;
+
+  font-weight: 800;
+
+}
+
+/* <------------------------------------------------
+      LEFT RECIPE ASSIGNMENT PANEL
+   -------------------------------------------------> */
+
+.assignment-panel {
+
+  position: fixed;
+
+  top: 0;
+  left: -250px;
+
+  width: min(230px, 82vw);
+  height: 100vh;
+
+  z-index: 2400;
+
+  border-right: 3px solid var(--theme-primary);
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  transition: left 0.28s ease;
+
+  overflow: hidden;
+
+}
+
+.assignment-panel.open {
+
+  left: 0;
+
+}
+
+.assignment-panel-close-button {
+
+  position: sticky;
+
+  top: 12px;
+  left: 12px;
+
+  z-index: 2450;
+
+  cursor: pointer;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: var(--theme-primary);
+  color: #ffffff;
+
+  font-size: 1.4rem;
+  font-weight: 700;
+
+}
+
+.assignment-panel-content {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  height: calc(100vh - 72px);
+
+  padding: 18px;
+  padding-top: 20px;
+  padding-bottom: 22px;
+
+  overflow: hidden;
+
+}
+
+/* <------------------------------------------------
+      ASSIGNMENT PANEL SMALL BUTTONS
+   -------------------------------------------------> */
+
+.assignment-panel .app-button {
+
+  align-self: flex-start;
+
+  padding: 7px 12px;
+
+  font-size: 0.82rem;
+
+}
+
+/* <------------------------------------------------
+      ASSIGNMENT PANEL ACTION CONTROLS
+   -------------------------------------------------> */
+
+.assignment-action-row {
+
+  display: flex;
+
+  align-items: stretch;
+
+  gap: 10px;
+
+}
+
+.assignment-action-stack {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+}
+
+.assignment-small-button {
+
+  width: 92px;
+
+  padding: 7px 12px;
+
+  font-size: 0.82rem;
+
+}
+
+.assignment-trash-dropzone {
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 6px;
+
+  width: 92px;
+
+  min-height: 76px;
+
+  position: relative;
+
+  top: -5px;
+
+  padding: 8px;
+
+  border: 2px dashed var(--theme-primary);
+  border-radius: 10px;
+
+  color: var(--theme-primary);
+
+  font-size: 0.82rem;
+  font-weight: 700;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.14s ease;
+
+}
+
+.assignment-trash-icon {
+
+  font-size: 1.25rem;
+  line-height: 1;
+
+}
+
+.assignment-trash-label {
+
+  line-height: 1;
+
+}
+
+.assignment-trash-dropzone.drag-over-trash {
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+  transform: scale(1.04);
+
+}
+
+/* <------------------------------------------------
+      ASSIGNMENT PANEL DIVIDERS
+   -------------------------------------------------> */
+
+.assignment-panel-divider {
+
+  width: 80%;
+  height: 1px;
+
+  margin: 0 auto;
+
+  background: var(--theme-primary);
+
+  opacity: 0.45;
+
+}
+
+.assignment-filter-group {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  flex: 0 0 auto;
+
+}
+
+.assignment-filter-header {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 8px;
+
+}
+
+.assignment-filter-group h3 {
+
+  color: var(--theme-primary);
+
+}
+
+.assignment-filter-toggle {
+
+  cursor: pointer;
+
+  width: 24px;
+  height: 24px;
+
+  border: 1px solid var(--theme-primary);
+  border-radius: 50%;
+
+  background: transparent;
+  color: var(--theme-primary);
+
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+
+}
+
+.assignment-filter-options {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+.assignment-filter-options.collapsed {
+
+  display: none;
+
+}
+
+.assignment-recipe-list {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  min-height: 0;
+  max-height: 100%;
+
+  padding-right: 4px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+
+}
+
+.assignment-recipe-list {
+
+  scrollbar-gutter: stable;
+
+  -webkit-overflow-scrolling: touch;
+
+}
+
+.assignment-recipe-item {
+
+  cursor: grab;
+	
+	flex: 0 0 auto;
+
+  color: var(--theme-primary);
+
+  font-size: 0.92rem;
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  user-select: none;
+
+}
+
+.assignment-recipe-item:active {
+
+  cursor: grabbing;
+
+}
+
+.assignment-recipe-item.dragging-sidebar-recipe {
+
+  opacity: 0.45;
+
+  outline: 1px dashed var(--theme-primary);
+  outline-offset: 2px;
+
+}
+
+body.assignment-panel-open .calendar-section {
+
+  width: calc(100% - 250px);
+
+  margin-left: 250px;
+
+}
+
+/* <------------------------------------------------
+      RIGHT SIDE PANCAKE MENU SYSTEM
+   -------------------------------------------------> */
+
+.menu-toggle-button {
+
+  position: fixed;
+
+  top: 18px;
+  right: 22px;
+
+  z-index: 3000;
+
+  cursor: pointer;
+
+  width: 54px;
+  height: 54px;
+
+  border: none;
+  border-radius: 12px;
+
+  background: var(--theme-primary);
+
+  color: #ffffff;
+
+  font-size: 1.8rem;
+  line-height: 1;
+
+  backdrop-filter: blur(8px);
+
+}
+
+.pancake-menu {
+
+  position: fixed;
+
+  top: 0;
+  right: -280px;
+
+  width: fit-content;
+
+  min-width: 180px;
+  max-width: min(260px, 92vw);
+
+  height: 100vh;
+
+  z-index: 2500;
+
+	background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  border-left: 3px solid var(--theme-primary);
+
+  transition: right 0.28s ease;
+
+  overflow-y: auto;
+
+}
+
+.pancake-menu.open {
+
+  right: 0;
+
+}
+
+.pancake-menu-content {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  width: max-content;
+
+  padding: 88px 20px 24px;
+
+}
+
+.menu-text-option {
+
+  cursor: pointer;
+
+  border: none;
+  background: transparent;
+
+  color: var(--text-primary);
+
+  text-align: left;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  transition:
+    opacity 0.20s ease,
+    transform 0.15s ease;
+
+}
+
+.menu-text-option:hover {
+
+  opacity: 0.75;
+
+  transform: translateX(6px);
+
+}
+
+/* <------------------------------------------------
+      RESPONSIVE MOBILE LAYOUT
+   -------------------------------------------------> */
+
+@media (max-width: 900px) {
+
+  .control-row {
+
+    grid-template-columns: 1fr;
+
+  }
+
+  .app-header {
+
+    flex-direction: column;
+    align-items: stretch;
+
+  }
+
+  .header-actions {
+
+    justify-content: center;
+
+  }
+
+  body.assignment-panel-open .calendar-section {
+
+    width: 100%;
+    margin-left: 0;
+
+  }
+
+  .assignment-panel {
+
+		width: min(230px, 84vw);
+
+	}
+
+}
+
+/* <------------------------------------------------
+      PRINT FOUNDATION
+      ONE PAGE LANDSCAPE CALENDAR SETUP
+   -------------------------------------------------> */
+
+@page {
+
+  size: letter landscape;
+  margin: 0.25in;
+
+}
+
+@media print {
+
+  html,
+  body {
+
+    width: 11in;
+    height: 8.5in;
+
+    background: #ffffff !important;
+    color: #000000 !important;
+
+    overflow: hidden !important;
+
+  }
+
+  body.dark-mode {
+
+    background: #ffffff !important;
+    color: #000000 !important;
+
+  }
+
+  .app-shell {
+
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+    padding: 0;
+
+  }
+
+.app-header,
+.control-panel,
+.category-panel,
+.database-panel,
+.calendar-toolbar,
+.calendar-screen-header,
+.menu-toggle-button,
+.pancake-menu,
+.assignment-panel,
+.settings-dialog,
+.help-dialog,
+.about-dialog,
+.admin-dialog,
+.wipe-dialog,
+.recipe-dialog,
+.recipe-box-dialog,
+.recipe-view-dialog, 
+.randomize-dialog,
+.slot-choice-dialog {
+
+  display: none !important;
+
+}
+
+  .app-main {
+
+    display: block;
+		
+		width: 10.5in;
+		height: 8in;
+
+		overflow: hidden !important;
+
+  }
+
+  .calendar-section {
+
+    display: block;
+
+    width: 10.5in;
+		height: 8in;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 0;
+
+    background: #ffffff !important;
+
+  }
+
+  .calendar-print-header {
+
+    display: block;
+		
+		height: 0.42in;
+
+    text-align: center;
+
+    margin-bottom: 0.03in;
+		
+		overflow: hidden;
+
+  }
+
+  .calendar-print-header h2 {
+
+    color: #000000 !important;
+		
+		font-family: var(--calendar-title-font);
+
+    font-size: 15pt;
+    line-height: 1.05;
+
+    margin: 0 0 0.01in 0;
+
+  }
+
+  .calendar-print-header h3 {
+
+    color: #000000 !important;
+		
+		font-family: var(--calendar-title-font);
+
+    font-size: 11pt;
+    line-height: 1.05;
+
+    margin: 0;
+
+  }
+
+  .calendar-weekday-row {
+
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+		
+		height: 0.22in;
+
+    border: 1px solid #000000;
+    border-bottom: none;
+
+    border-radius: 0;
+		
+		overflow: hidden;
+
+  }
+
+  .weekday-cell {
+
+    padding: 0.035in;
+
+    color: #000000 !important;
+    background: #ffffff !important;
+
+    font-size: 9pt;
+    font-weight: 700;
+    text-align: center;
+
+    border-right: 1px solid #000000;
+
+  }
+
+  .weekday-cell:last-child {
+
+    border-right: none;
+
+  }
+
+	.calendar-grid {
+
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		grid-template-rows: repeat(6, 1.18in);
+
+		min-height: 0;
+		height: 7.08in;
+
+		border: 1px solid #000000;
+
+		border-radius: 0;
+
+		overflow: hidden;
+
+	}
+
+  .calendar-day-cell {
+
+    min-height: 0;
+    height: 1.18in;
+
+    padding: 0.035in;
+
+    background: #ffffff !important;
+
+    border-color: #000000;
+
+    overflow: hidden;
+
+    break-inside: avoid;
+    page-break-inside: avoid;
+
+  }
+
+  .calendar-day-cell.inactive-day {
+
+		background: #f2f2f2 !important;
+
+		color: #555555 !important;
+
+  }
+
+  .day-number {
+
+    color: #000000 !important;
+		
+		font-family: var(--calendar-title-font);
+
+    font-size: 8pt;
+    font-weight: 700;
+
+    margin-bottom: 0.02in;
+
+  }
+
+  .calendar-meal-display-list {
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 0.015in;
+
+    min-height: 0;
+
+    overflow: hidden;
+
+  }
+
+  .calendar-meal-name {
+
+    color: #000000 !important;
+
+    font-size: 6pt;
+    line-height: 1.05;
+
+    overflow: hidden;
+    text-overflow: clip;
+
+  }
+
+}

@@ -1,0 +1,12 @@
+{
+  "name": "The Ultimate Meal Planner",
+  "short_name": "Meal Planner",
+  "description": "Offline monthly meal calendar, recipe planner, shopping list, sharing, backups, and print-ready meal planning app.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2f5f9f",
+  "icons": []
+}
