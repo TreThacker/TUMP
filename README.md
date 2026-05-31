@@ -236,7 +236,7 @@ Once installed or loaded, the app can continue working without an internet conne
 ### Planned / In Progress
 
 * Android devices
-* Apple iPad Pro
+* Apple iPad
 * Additional tablet support
 * Mobile responsive layouts
 
