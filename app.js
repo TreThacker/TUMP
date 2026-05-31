@@ -849,6 +849,7 @@ function collectDomReferences() {
 
   DOM.loadMonthButton = document.getElementById("loadMonthButton");
 	DOM.saveMonthButton = document.getElementById("saveMonthButton");
+	DOM.copyMonthButton = document.getElementById("copyMonthButton");
 	DOM.todayMonthButton = document.getElementById("todayMonthButton");
   DOM.randomizeMealsButton = document.getElementById("randomizeMealsButton");
   DOM.previousMonthButton = document.getElementById("previousMonthButton");
@@ -958,6 +959,16 @@ function collectDomReferences() {
 	DOM.randomizeForm = document.getElementById("randomizeForm");
 	DOM.closeRandomizeButton = document.getElementById("closeRandomizeButton");
 	DOM.randomizeCategoryCheckboxes = Array.from(document.querySelectorAll(".randomize-category-checkbox"));
+	DOM.randomizeVarianceSlider = document.getElementById("randomizeVarianceSlider");
+	DOM.randomizeVarianceDescription = document.getElementById("randomizeVarianceDescription");
+	
+	DOM.copyMonthDialog = document.getElementById("copyMonthDialog");
+	DOM.copyMonthForm = document.getElementById("copyMonthForm");
+	DOM.closeCopyMonthButton = document.getElementById("closeCopyMonthButton");
+	DOM.copyMonthSourceText = document.getElementById("copyMonthSourceText");
+	DOM.copyMonthTargetMonthSelect = document.getElementById("copyMonthTargetMonthSelect");
+	DOM.copyMonthTargetYearInput = document.getElementById("copyMonthTargetYearInput");
+
 	DOM.assignmentTrashDropzone = document.getElementById("assignmentTrashDropzone");
 	DOM.assignmentFilterToggleButton = document.getElementById("assignmentFilterToggleButton");
 	DOM.assignmentFilterOptions = document.getElementById("assignmentFilterOptions");
@@ -1340,6 +1351,10 @@ function connectBaseEventListeners() {
 		DOM.saveMonthButton.addEventListener("click", saveCurrentMonthFoundation);
 	}
 
+	if (DOM.copyMonthButton) {
+		DOM.copyMonthButton.addEventListener("click", openCopyMonthDialog);
+	}
+
 	if (DOM.todayMonthButton) {
 		DOM.todayMonthButton.addEventListener("click", goToCurrentMonth);
 	}
@@ -1408,6 +1423,14 @@ function connectBaseEventListeners() {
 		DOM.confirmWipeDatabaseButton.addEventListener("click", wipeEntireDatabase);
 	}
 	
+	if (DOM.copyMonthForm) {
+		DOM.copyMonthForm.addEventListener("submit", copyCurrentMonthToTargetMonth);
+	}
+
+	if (DOM.closeCopyMonthButton) {
+		DOM.closeCopyMonthButton.addEventListener("click", closeCopyMonthDialog);
+	}
+	
 	if (DOM.closeAssignmentPanelButton) {
 		DOM.closeAssignmentPanelButton.addEventListener("click", closeAssignmentPanel);
 	}
@@ -1434,7 +1457,11 @@ function connectBaseEventListeners() {
 
 	if (DOM.randomizeForm) {
 		DOM.randomizeForm.addEventListener("submit", handleRandomizeCalendar);
-	}	
+	}
+
+	if (DOM.randomizeVarianceSlider) {
+		DOM.randomizeVarianceSlider.addEventListener("input", updateRandomizeVarianceDescription);
+	}
 	
 	if (DOM.assignmentTrashDropzone) {
   DOM.assignmentTrashDropzone.addEventListener("dragover", (event) => {
@@ -2479,6 +2506,131 @@ function renderAssignmentRecipeList() {
 }
 
 /* <------------------------------------------------
+      MONTH COPY PASTE SYSTEM
+   -------------------------------------------------> */
+
+function openCopyMonthDialog() {
+
+  updateCalendarDateEngine();
+
+  if (DOM.copyMonthSourceText) {
+    DOM.copyMonthSourceText.textContent =
+      `Copy ${getMonthName(appState.calendar.activeMonthIndex)} ${appState.calendar.activeYear} to another month.`;
+  }
+
+  if (DOM.copyMonthTargetMonthSelect) {
+    const nextMonthIndex =
+      appState.calendar.activeMonthIndex === 11
+        ? 0
+        : appState.calendar.activeMonthIndex + 1;
+
+    DOM.copyMonthTargetMonthSelect.value =
+      String(nextMonthIndex);
+  }
+
+  if (DOM.copyMonthTargetYearInput) {
+    const targetYear =
+      appState.calendar.activeMonthIndex === 11
+        ? appState.calendar.activeYear + 1
+        : appState.calendar.activeYear;
+
+    DOM.copyMonthTargetYearInput.value =
+      String(targetYear);
+  }
+
+  openDialog(DOM.copyMonthDialog);
+
+}
+
+function closeCopyMonthDialog() {
+
+  if (DOM.copyMonthDialog) {
+    DOM.copyMonthDialog.close();
+  }
+
+}
+
+async function copyCurrentMonthToTargetMonth(event) {
+
+  event.preventDefault();
+
+  updateCalendarDateEngine();
+
+  const sourceMonthData =
+    structuredClone(getCurrentMonthWorkingData());
+
+  const targetMonthIndex =
+    Number(DOM.copyMonthTargetMonthSelect?.value);
+
+  const targetYear =
+    Number(DOM.copyMonthTargetYearInput?.value);
+
+  if (
+    !Number.isInteger(targetMonthIndex) ||
+    targetMonthIndex < 0 ||
+    targetMonthIndex > 11 ||
+    !Number.isInteger(targetYear) ||
+    targetYear < 1900 ||
+    targetYear > 2200
+  ) {
+    alert("Choose a valid target month and year.");
+    return;
+  }
+
+  if (
+    targetMonthIndex === appState.calendar.activeMonthIndex &&
+    targetYear === appState.calendar.activeYear
+  ) {
+    alert("Choose a different target month.");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Paste ${getMonthName(appState.calendar.activeMonthIndex)} ${appState.calendar.activeYear} into ${getMonthName(targetMonthIndex)} ${targetYear}?\n\nThis will replace any meals already saved in the target month.`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const targetSlotKey =
+    buildMonthSlotKey(targetYear, targetMonthIndex);
+
+  const targetMonthData = {
+    ...sourceMonthData,
+    slotKey: targetSlotKey,
+    monthIndex: targetMonthIndex,
+    year: targetYear,
+    calendarName: sourceMonthData.calendarName || appState.settings.calendarName,
+    enabledCategories: Array.isArray(sourceMonthData.enabledCategories)
+      ? [...sourceMonthData.enabledCategories]
+      : getActiveMealCategories(),
+    days: structuredClone(sourceMonthData.days || {}),
+    updatedAt: new Date().toISOString()
+  };
+
+  appState.calendarMonthsBySlot[targetSlotKey] =
+    targetMonthData;
+
+  const wasSaved =
+    await saveCalendarMonthToDatabase(targetMonthData);
+
+  if (!wasSaved) {
+    alert("The copied month could not be saved.");
+    return;
+  }
+
+  closeCopyMonthDialog();
+
+  showAutoSaveToast();
+
+  alert(
+    `${getMonthName(appState.calendar.activeMonthIndex)} ${appState.calendar.activeYear} was copied to ${getMonthName(targetMonthIndex)} ${targetYear}.`
+  );
+
+}
+
+/* <------------------------------------------------
       RANDOMIZE CALENDAR SYSTEM
    -------------------------------------------------> */
 
@@ -2510,9 +2662,51 @@ async function clearCurrentCalendarMonth() {
 }
 
 function openRandomizeDialog() {
+  updateRandomizeVarianceDescription();
+
   if (DOM.randomizeDialog) {
     openDialog(DOM.randomizeDialog);
   }
+}
+
+/* <------------------------------------------------
+      RANDOMIZER VARIANCE CONTROL SYSTEM
+   -------------------------------------------------> */
+
+function getRandomizeRepeatSpacingDays() {
+
+  const sliderValue =
+    Number(DOM.randomizeVarianceSlider?.value || 1);
+
+  const spacingMap = {
+    1: 7,
+    2: 14,
+    3: 21,
+    4: 32
+  };
+
+  return spacingMap[sliderValue] || 7;
+
+}
+
+function updateRandomizeVarianceDescription() {
+
+  if (!DOM.randomizeVarianceDescription) {
+    return;
+  }
+
+  const repeatSpacingDays =
+    getRandomizeRepeatSpacingDays();
+
+  if (repeatSpacingDays === 32) {
+    DOM.randomizeVarianceDescription.textContent =
+      "The same meal will only be used once per month.";
+    return;
+  }
+
+  DOM.randomizeVarianceDescription.textContent =
+    `The same meal will not repeat within ${repeatSpacingDays} days.`;
+
 }
 
 function closeRandomizeDialog() {
@@ -2551,35 +2745,105 @@ async function handleRandomizeCalendar(event) {
   }
 
   const monthData = getCurrentMonthWorkingData();
+  const repeatSpacingDays = getRandomizeRepeatSpacingDays();
+  const usedDaysByRecipe = {};
+  const useCountByRecipe = {};
+
+  let blankSpaceWasNeeded = false;
 
   monthData.days = {};
 
-for (let dayNumber = 1; dayNumber <= appState.calendar.daysInMonth; dayNumber += 1) {
-  const meals = {};
-  const usedRecipeIds = new Set();
+  const shuffleList = (list) => {
+    return [...list].sort(() => Math.random() - 0.5);
+  };
 
-  selectedCategories.forEach((categoryName) => {
-    const categoryRecipes = recipesByCategory[categoryName];
-    const unusedCategoryRecipes = categoryRecipes.filter((recipe) => {
-      return !usedRecipeIds.has(recipe.id);
-    });
+  const dayNumbers = Array.from(
+    { length: appState.calendar.daysInMonth },
+    (unusedValue, index) => index + 1
+  );
 
-    const availableRecipes =
-      unusedCategoryRecipes.length > 0
-        ? unusedCategoryRecipes
-        : categoryRecipes;
+  const categoryOrderByDay = {};
 
-    const randomRecipe =
-      availableRecipes[Math.floor(Math.random() * availableRecipes.length)];
-
-    meals[categoryName] = randomRecipe.id;
-    usedRecipeIds.add(randomRecipe.id);
+  dayNumbers.forEach((dayNumber) => {
+    categoryOrderByDay[dayNumber] =
+      shuffleList(selectedCategories);
   });
 
-  monthData.days[String(dayNumber)] = {
-    meals
-  };
-}
+  for (let categoryPassIndex = 0; categoryPassIndex < selectedCategories.length; categoryPassIndex += 1) {
+    const shuffledDays = shuffleList(dayNumbers);
+
+    shuffledDays.forEach((dayNumber) => {
+      const categoryName =
+        categoryOrderByDay[dayNumber][categoryPassIndex];
+
+      const categoryRecipes =
+        recipesByCategory[categoryName];
+
+      const dayKey =
+        String(dayNumber);
+
+      const existingMeals =
+        monthData.days[dayKey]?.meals || {};
+
+      const usedRecipeIdsToday =
+        new Set(Object.values(existingMeals));
+
+      const availableRecipes = categoryRecipes.filter((recipe) => {
+        const usedDays =
+          usedDaysByRecipe[recipe.id] || [];
+
+        const isAllowedBySpacing =
+          usedDays.every((usedDayNumber) => {
+            return Math.abs(dayNumber - usedDayNumber) >= repeatSpacingDays;
+          });
+
+        const isNotAlreadyUsedToday =
+          !usedRecipeIdsToday.has(recipe.id);
+
+        return isAllowedBySpacing && isNotAlreadyUsedToday;
+      });
+
+      if (availableRecipes.length === 0) {
+        blankSpaceWasNeeded = true;
+        return;
+      }
+
+      const lowestUseCount =
+        Math.min(
+          ...availableRecipes.map((recipe) => {
+            return useCountByRecipe[recipe.id] || 0;
+          })
+        );
+
+      const leastUsedAvailableRecipes =
+        availableRecipes.filter((recipe) => {
+          return (useCountByRecipe[recipe.id] || 0) === lowestUseCount;
+        });
+
+      const randomRecipe =
+        leastUsedAvailableRecipes[
+          Math.floor(Math.random() * leastUsedAvailableRecipes.length)
+        ];
+
+      if (!monthData.days[dayKey]) {
+        monthData.days[dayKey] = {
+          meals: {}
+        };
+      }
+
+      monthData.days[dayKey].meals[categoryName] =
+        randomRecipe.id;
+
+      if (!usedDaysByRecipe[randomRecipe.id]) {
+        usedDaysByRecipe[randomRecipe.id] = [];
+      }
+
+      usedDaysByRecipe[randomRecipe.id].push(dayNumber);
+
+      useCountByRecipe[randomRecipe.id] =
+        (useCountByRecipe[randomRecipe.id] || 0) + 1;
+    });
+  }
 
   monthData.calendarName = appState.settings.calendarName;
   monthData.enabledCategories = getActiveMealCategories();
@@ -2596,6 +2860,13 @@ for (let dayNumber = 1; dayNumber <= appState.calendar.daysInMonth; dayNumber +=
     showAutoSaveToast();
   } else {
     alert("The randomized calendar could not be auto-saved.");
+    return;
+  }
+
+  if (blankSpaceWasNeeded) {
+    alert(
+      "There are not enough meals in your Recipe Box to fill every selected meal slot using the repeat spacing you selected.\n\nSome slots were left blank.\n\nYou can fill the empty spaces manually, re-randomize with a different spacing setting, or add more meals to the Recipe Box/categories you selected."
+    );
   }
 }
 
@@ -4945,11 +5216,17 @@ async function autoSaveCurrentMonthCategories() {
 
 function getCurrentMonthSlotKey() {
 
-  const monthNumber =
-    String(appState.calendar.activeMonthIndex + 1).padStart(2, "0");
+  return buildMonthSlotKey(
+    appState.calendar.activeYear,
+    appState.calendar.activeMonthIndex
+  );
 
-  const year =
-    String(appState.calendar.activeYear);
+}
+
+function buildMonthSlotKey(year, monthIndex) {
+
+  const monthNumber =
+    String(monthIndex + 1).padStart(2, "0");
 
   return `planner-month-${year}-${monthNumber}`;
 

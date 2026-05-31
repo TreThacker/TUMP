@@ -344,10 +344,22 @@
 			Auto-saved!
 		</div>
 
-    <div class="calendar-toolbar-actions">
+        <div class="calendar-toolbar-actions">
       <button type="button" class="app-button secondary-button" id="saveMonthButton">
         Save
       </button>
+
+<!-- <------------------------------------------------
+      MONTH COPY BUTTON
+     ------------------------------------------------->
+
+			<button
+				type="button"
+				class="app-button secondary-button"
+				id="copyMonthButton"
+			>
+				Copy
+			</button>
 
       <button type="button" class="app-button secondary-button" id="todayMonthButton">
         Today
@@ -609,6 +621,102 @@
 </dialog>
 
 <!-- <------------------------------------------------
+      COPY MONTH WINDOW
+     ------------------------------------------------->
+
+<dialog class="copy-month-dialog" id="copyMonthDialog">
+
+	<form method="dialog" class="copy-month-dialog-content" id="copyMonthForm">
+
+		<header class="dialog-header">
+
+			<h2>Copy Month</h2>
+
+			<button
+				type="button"
+				class="dialog-close-button"
+				id="closeCopyMonthButton"
+			>
+				Close
+			</button>
+
+		</header>
+
+		<p
+			class="panel-note"
+			id="copyMonthSourceText"
+		>
+			Copy the current month to another month.
+		</p>
+
+		<div class="copy-month-target-row">
+
+			<div class="control-group">
+
+				<label for="copyMonthTargetMonthSelect">
+					Paste To Month
+				</label>
+
+				<select
+					id="copyMonthTargetMonthSelect"
+					class="select-input"
+				>
+					<option value="0">January</option>
+					<option value="1">February</option>
+					<option value="2">March</option>
+					<option value="3">April</option>
+					<option value="4">May</option>
+					<option value="5">June</option>
+					<option value="6">July</option>
+					<option value="7">August</option>
+					<option value="8">September</option>
+					<option value="9">October</option>
+					<option value="10">November</option>
+					<option value="11">December</option>
+				</select>
+
+			</div>
+
+			<div class="control-group">
+
+				<label for="copyMonthTargetYearInput">
+					Paste To Year
+				</label>
+
+				<input
+					type="number"
+					id="copyMonthTargetYearInput"
+					class="text-input"
+					min="1900"
+					max="2200"
+					step="1"
+				>
+
+			</div>
+
+		</div>
+
+		<p class="panel-note">
+			This will replace any meals already saved in the target month.
+		</p>
+
+		<div class="button-row">
+
+			<button
+				type="submit"
+				class="app-button primary-button"
+				id="confirmCopyMonthButton"
+			>
+				Paste Month
+			</button>
+
+		</div>
+
+	</form>
+
+</dialog>
+
+<!-- <------------------------------------------------
       RANDOMIZE CALENDAR WINDOW
      ------------------------------------------------->
 
@@ -647,6 +755,44 @@
         Snack/Dessert
       </label>
     </div>
+
+<!-- <------------------------------------------------
+      RANDOMIZER VARIANCE CONTROL
+     ------------------------------------------------->
+
+		<div class="randomize-variance-control">
+
+			<label for="randomizeVarianceSlider">
+				Meal Repeat Spacing
+			</label>
+
+			<input
+				type="range"
+				id="randomizeVarianceSlider"
+				class="randomize-variance-slider"
+				min="1"
+				max="4"
+				step="1"
+				value="1"
+			>
+
+			<div class="randomize-variance-label-row">
+
+				<span>1 Week</span>
+				<span>2 Weeks</span>
+				<span>3 Weeks</span>
+				<span>Once / Month</span>
+
+			</div>
+
+			<p
+				class="panel-note"
+				id="randomizeVarianceDescription"
+			>
+				The same meal will not repeat within 7 days.
+			</p>
+
+		</div>
 
     <div class="button-row">
       <button type="submit" class="app-button primary-button" id="confirmRandomizeButton">
@@ -1362,6 +1508,8 @@
 				<li>Click Today to return to the current month.</li>
 				<li>Click Previous or Next to move between months.</li>
 				<li>Click Save if you want to manually save the current month.</li>
+				<li>Click Copy to paste the current month’s meal calendar into another month.</li>
+				<li>Copy Month replaces any meals already saved in the target month.</li>
 				<li>The app also auto-saves many calendar changes.</li>
 			</ul>
 		</section>
@@ -1374,6 +1522,9 @@
 				<li>If a recipe fits more than one meal category, choose the correct meal slot when prompted.</li>
 				<li>Drag a calendar meal to the Trash box in the Assign Meals panel to remove it from the calendar.</li>
 				<li>Use Filter Meals to show or hide Breakfast, Lunch, Dinner, or Snack/Dessert recipes.</li>
+				<li>Click Randomize to automatically fill the month using the selected meal categories.</li>
+				<li>Use Meal Repeat Spacing to control how often the same meal can repeat: 1 Week, 2 Weeks, 3 Weeks, or Once Per Month.</li>
+				<li>If there are not enough recipes to fill every selected slot, the app leaves some slots blank and warns you.</li>
 			</ul>
 		</section>
 

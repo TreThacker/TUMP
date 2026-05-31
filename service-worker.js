@@ -9,7 +9,7 @@
       VERSION 1.00 Final - Initial service worker foundation created.
    -------------------------------------------------> //
 
-const CACHE_NAME = "ultimate-meal-planner-v1-00-final";
+const CACHE_NAME = "ultimate-meal-planner-v1-00-final-fixed";
 
 const APP_SHELL_FILES = [
   "./",
