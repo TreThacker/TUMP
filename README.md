@@ -187,6 +187,9 @@ The app can then launch from:
 
 ### Android Install
 
+VERSION 1.00 FINAL is not recommended for Cell Phone use.
+Future version will deploy cell phone compatibility.
+
 Open the app URL.
 
 Tap:
@@ -229,11 +232,9 @@ Once installed or loaded, the app can continue working without an internet conne
 
 * Windows 10
 * Google Chrome
-* Microsoft Edge
 
 ### Planned / In Progress
 
-* Samsung Galaxy S24 Ultra
 * Android devices
 * Apple iPad Pro
 * Additional tablet support
