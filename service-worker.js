@@ -1,22 +1,23 @@
 // <------------------------------------------------
       THE ULTIMATE MEAL PLANNER
       FILE: service-worker.js
-      VERSION: 1.00
+      VERSION: 1.00 Final
       CREDITS: Tre Thacker ~ 2026
       DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
 
       SERVICE WORKER CHANGELOG:
-      VERSION 1.00 - Initial service worker foundation created.
+      VERSION 1.00 Final - Initial service worker foundation created.
    -------------------------------------------------> //
 
-const CACHE_NAME = "ultimate-meal-planner-v1-00";
+const CACHE_NAME = "ultimate-meal-planner-v1-00-final";
 
 const APP_SHELL_FILES = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
-  "./manifest.json"
+  "./manifest.json",
+  "./image/tump-icon.png"
 ];
 
 self.addEventListener("install", (event) => {

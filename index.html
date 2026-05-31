@@ -1,12 +1,12 @@
 <!-- <------------------------------------------------
       THE ULTIMATE MEAL PLANNER
       FILE: index.html
-      VERSION: 1.00
+      Version: 1.00 Final
       CREDITS: Tre Thacker ~ 2026
-      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~
 
       HTML CHANGELOG:
-      VERSION 1.00 - Initial HTML foundation created.
+      VERSION 1.00 Final - Initial HTML foundation created.
      ------------------------------------------------->
 
 <!DOCTYPE html>
@@ -58,12 +58,12 @@
 </button>
 
 <aside
-  class="pancake-menu"
-  id="pancakeMenu"
+  class="hamburger-menu"
+  id="hamburgerMenu"
   aria-label="Application menu"
 >
 
-  <div class="pancake-menu-content">
+  <div class="hamburger-menu-content">
 
     <button
       type="button"
@@ -80,6 +80,30 @@
     >
       Recipe Box
     </button>
+		
+		<button
+			type="button"
+			class="menu-text-option"
+			id="menuPantryButton"
+		>
+			Pantry
+		</button>
+		
+		<button
+			type="button"
+			class="menu-text-option"
+			id="menuShoppingListButton"
+		>
+			Shopping List
+		</button>
+		
+		<button
+			type="button"
+			class="menu-text-option"
+			id="menuConversionChartButton"
+		>
+			Conversion Chart
+		</button>		
 
     <button
       type="button"
@@ -359,6 +383,92 @@
 </div>
 
 <!-- <------------------------------------------------
+      WELCOME WINDOW
+     ------------------------------------------------->
+
+<dialog class="welcome-dialog" id="welcomeDialog">
+
+	<div class="welcome-dialog-content">
+
+<!-- <------------------------------------------------
+      WELCOME HEADER LAYOUT
+     ------------------------------------------------->
+
+<div class="welcome-header-layout">
+
+    <img
+        src="image/tump-icon.png"
+        alt="Ultimate Meal Planner Icon"
+        class="welcome-app-icon"
+    >
+
+    <div class="welcome-title-group">
+
+        <h2 id="welcomeAppTitle">The Ultimate Meal Planner</h2>
+
+        <p class="welcome-version-line">
+            <strong>Version:</strong>
+            <span id="welcomeAppVersion">1.00 Final</span>
+        </p>
+
+        <p
+            class="welcome-credit-line"
+            id="welcomeAppCredits"
+        >
+            Tre Thacker ~ 2026
+        </p>
+
+    </div>
+
+</div>
+
+<p
+    class="welcome-dedication-line"
+    id="welcomeAppDedication"
+>
+    ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+</p>
+
+		<section class="welcome-message-section">
+
+			<h3>Welcome!</h3>
+
+			<p>
+								Welcome to The Ultimate Meal Planner — your all-in-one kitchen command center for meal planning! Build monthly meal calendars, save favorite recipes, create shopping lists, manage your pantry, print, share, import, export, backup your data, and keep your meal-planning life running deliciously smooth.
+			</p>
+
+			<p>
+				Use the Help option inside the hamburger menu
+				<span class="welcome-hamburger-example" aria-hidden="true">☰</span>
+				on the top right to explore the app’s features, discover handy tools, and learn your way around. Ready to jump in? Open the Recipe Box and add a few recipes to kickstart your delicious new meal planner adventure!
+			</p>
+
+		</section>
+
+		<label class="welcome-checkbox-row">
+
+			<input
+				type="checkbox"
+				id="doNotShowWelcomeAgainCheckbox"
+			>
+
+			<span>Do not show this welcome screen again.</span>
+
+		</label>
+
+		<button
+			type="button"
+			class="app-button primary-button"
+			id="closeWelcomeButton"
+		>
+			Start Planning
+		</button>
+
+	</div>
+
+</dialog>
+
+<!-- <------------------------------------------------
       ADMIN PANEL WINDOW
      ------------------------------------------------->
 <dialog class="admin-dialog" id="adminDialog">
@@ -547,6 +657,178 @@
 </dialog>
 
 <!-- <------------------------------------------------
+      CONVERSION CHART WINDOW
+     ------------------------------------------------->
+
+<dialog class="conversion-chart-dialog" id="conversionChartDialog">
+
+	<div class="conversion-chart-content">
+
+		<header class="dialog-header">
+
+			<h2>Conversion Chart</h2>
+
+			<button
+				type="button"
+				class="dialog-close-button"
+				id="closeConversionChartButton"
+			>
+				Close
+			</button>
+
+		</header>
+
+		<div
+			class="conversion-chart-body"
+			id="conversionChartBody"
+			aria-label="Cooking measurement conversion chart"
+		>
+		</div>
+
+	</div>
+
+</dialog>
+
+<!-- <------------------------------------------------
+      PANTRY WINDOW
+     ------------------------------------------------->
+
+<dialog class="pantry-dialog" id="pantryDialog">
+
+	<div class="pantry-content">
+
+		<header class="dialog-header">
+
+			<h2>Pantry</h2>
+
+			<button
+				type="button"
+				class="dialog-close-button"
+				id="closePantryButton"
+			>
+				Close
+			</button>
+
+		</header>
+
+		<p class="panel-note">
+			Checked items are already in your pantry and will be removed from generated shopping lists. Unchecked items will appear as item-only with no measurements. Drag item to trash can to remove it from pantry.
+		</p>
+
+		<div class="pantry-add-row">
+
+			<input
+				type="text"
+				id="pantryItemInput"
+				class="text-input"
+				placeholder="Add pantry item"
+				autocomplete="off"
+			>
+
+			<button
+				type="button"
+				class="app-button primary-button"
+				id="addPantryItemButton"
+			>
+				Add
+			</button>
+
+			<div
+				class="pantry-trash-dropzone"
+				id="pantryTrashDropzone"
+				aria-label="Drag pantry items here to remove them"
+				title="Drag pantry items here to remove them"
+			>
+				<span class="pantry-trash-icon" aria-hidden="true">🗑</span>
+				<span class="pantry-trash-label">Trash</span>
+			</div>
+
+		</div>
+
+		<div
+			class="pantry-item-list"
+			id="pantryItemList"
+			aria-label="Pantry item checklist"
+		>
+		</div>
+
+	</div>
+
+</dialog>
+
+<!-- <------------------------------------------------
+      SHOPPING LIST WINDOW
+     ------------------------------------------------->
+
+<dialog class="shopping-list-dialog" id="shoppingListDialog">
+
+	<div class="shopping-list-content">
+
+		<header class="dialog-header">
+
+			<h2>Shopping List</h2>
+
+			<button
+				type="button"
+				class="dialog-close-button"
+				id="closeShoppingListButton"
+			>
+				Close
+			</button>
+
+		</header>
+
+		<div class="shopping-list-actions">
+
+			<button
+				type="button"
+				class="app-button primary-button"
+				id="generateShoppingListButton"
+			>
+				Generate
+			</button>
+
+			<button
+				type="button"
+				class="app-button secondary-button"
+				id="printShoppingListButton"
+			>
+				Print
+			</button>
+			
+			<button
+				type="button"
+				class="app-button secondary-button"
+				id="shareShoppingListButton"
+			>
+				Share
+			</button>
+
+			<button
+				type="button"
+				class="app-button secondary-button"
+				id="clearShoppingListButton"
+			>
+				Clear
+			</button>
+
+		</div>
+
+		<div
+			class="shopping-list-items"
+			id="shoppingListItems"
+			aria-label="Shopping list items"
+		>
+			<p class="panel-note">
+				No shopping list has been generated yet.
+			</p>
+		</div>
+
+	</div>
+
+</dialog>
+
+<!-- <------------------------------------------------
       RECIPE BOX WINDOW
      ------------------------------------------------->
 
@@ -612,6 +894,25 @@
       >
         Add Recipe
       </button>
+			
+			<button
+				type="button"
+				class="app-button secondary-button"
+				id="recipeBoxImportRecipeButton"
+			>
+				Import Recipe
+			</button>
+			
+<!-- <------------------------------------------------
+			SINGLE RECIPE IMPORT FILE INPUT
+			------------------------------------------------->
+
+		<input
+			type="file"
+			id="importRecipeFileInput"
+			accept=".json,application/json"
+			hidden
+		>
 
     </div>
 
@@ -646,24 +947,95 @@
       </button>
     </header>
 
-    <p class="recipe-view-description" id="recipeViewDescription"></p>
+			<p
+				class="recipe-view-description preserve-recipe-spacing"
+				id="recipeViewDescription"
+			></p>
 
-    <p class="recipe-view-categories" id="recipeViewCategories"></p>
+			<p
+				class="recipe-view-categories"
+				id="recipeViewCategories"
+			></p>
 
-    <section class="recipe-view-section">
-      <h3>Ingredients</h3>
-      <div id="recipeViewIngredients"></div>
-    </section>
+<!-- <------------------------------------------------
+      RECIPE VIEW TIME AND SERVINGS DISPLAY
+     ------------------------------------------------->
 
-    <section class="recipe-view-section">
-      <h3>Instructions</h3>
-      <p id="recipeViewInstructions"></p>
-    </section>
+			<div
+				class="recipe-view-time-row"
+				id="recipeViewTimeRow"
+			>
 
-    <section class="recipe-view-section">
-      <h3>Source</h3>
-      <p id="recipeViewSource"></p>
-    </section>
+				<div class="recipe-view-time-card">
+					<strong>Prep</strong>
+					<span id="recipeViewPrepTime"></span>
+				</div>
+
+				<div class="recipe-view-time-card">
+					<strong>Cook</strong>
+					<span id="recipeViewCookTime"></span>
+				</div>
+
+				<div class="recipe-view-time-card">
+					<strong>Total</strong>
+					<span id="recipeViewTotalTime"></span>
+				</div>
+
+			</div>
+
+			<p
+				class="recipe-view-servings"
+				id="recipeViewServings"
+			></p>
+
+			<section class="recipe-view-section">
+
+				<h3>Ingredients</h3>
+
+				<div id="recipeViewIngredients"></div>
+
+			</section>
+
+			<section class="recipe-view-section">
+
+				<h3>Instructions</h3>
+
+				<div
+					class="preserve-recipe-spacing"
+					id="recipeViewInstructions"
+				></div>
+
+			</section>
+
+			<section class="recipe-view-section">
+
+				<h3>Notes</h3>
+
+				<div
+					class="preserve-recipe-spacing"
+					id="recipeViewNotes"
+				></div>
+
+			</section>
+
+			<section class="recipe-view-section">
+
+				<h3>Nutrition</h3>
+
+				<div
+					class="preserve-recipe-spacing"
+					id="recipeViewNutrition"
+				></div>
+
+			</section>
+
+			<section class="recipe-view-section">
+
+				<h3>Source</h3>
+
+				<div id="recipeViewSource"></div>
+
+			</section>
 
     <div class="button-row">
       <button
@@ -681,6 +1053,15 @@
       >
         Share
       </button>
+			
+			 <button
+        type="button"
+        class="app-button secondary-button"
+        id="exportViewedRecipeButton"
+      >
+        Export
+      </button>
+			
     </div>
 
   </div>
@@ -725,6 +1106,61 @@
 				maxlength="500"
 				placeholder="Optional description. This only appears inside the recipe card/view."
 			></textarea>
+		</div>
+
+<!-- <------------------------------------------------
+      RECIPE TIME AND SERVINGS FIELDS
+     ------------------------------------------------->
+
+		<div class="recipe-time-row">
+
+			<div class="control-group">
+				<label for="recipePrepTimeInput">Prep Time</label>
+				<input
+					type="number"
+					id="recipePrepTimeInput"
+					class="text-input"
+					min="0"
+					step="1"
+					placeholder="Minutes"
+				>
+			</div>
+
+			<div class="control-group">
+				<label for="recipeCookTimeInput">Cook Time</label>
+				<input
+					type="number"
+					id="recipeCookTimeInput"
+					class="text-input"
+					min="0"
+					step="1"
+					placeholder="Minutes"
+				>
+			</div>
+
+			<div class="control-group">
+				<label for="recipeTotalTimeInput">Total Time</label>
+				<input
+					type="number"
+					id="recipeTotalTimeInput"
+					class="text-input"
+					min="0"
+					step="1"
+					placeholder="Minutes"
+				>
+			</div>
+
+		</div>
+
+		<div class="control-group">
+			<label for="recipeServingsInput">Servings</label>
+			<input
+				type="text"
+				id="recipeServingsInput"
+				class="text-input"
+				maxlength="60"
+				placeholder="Optional servings"
+			>
 		</div>
 
     <div class="control-group">
@@ -773,6 +1209,34 @@
       ></textarea>
     </div>
 
+<!-- <------------------------------------------------
+      RECIPE NOTES FIELD
+     ------------------------------------------------->
+
+    <div class="control-group">
+      <label for="recipeNotesInput">Notes</label>
+      <textarea
+        id="recipeNotesInput"
+        class="text-area"
+        rows="4"
+        placeholder="Optional recipe notes."
+      ></textarea>
+    </div>
+
+<!-- <------------------------------------------------
+      RECIPE NUTRITION FIELD
+     ------------------------------------------------->
+
+    <div class="control-group">
+      <label for="recipeNutritionInput">Nutrition</label>
+      <textarea
+        id="recipeNutritionInput"
+        class="text-area"
+        rows="4"
+        placeholder="Optional nutrition information."
+      ></textarea>
+    </div>
+
     <div class="control-group">
       <label for="recipeSourceUrlInput">Source URL</label>
       <input
@@ -796,7 +1260,7 @@
 </dialog>
 
 <!-- <------------------------------------------------
-			THEME AND FONT SETTINGS WINDOW PLACEHOLDER
+			THEME AND FONT SETTINGS WINDOW
 		 ------------------------------------------------->
 <dialog class="settings-dialog" id="themeFontDialog">
 	<form method="dialog" class="settings-dialog-content">
@@ -813,6 +1277,8 @@
 		
 		<p class="panel-note">
 			Customize the calendar title, month/year, and day number fonts.
+		</p>
+		
 		<div class="control-group">
 			<label for="themePresetSelect">Theme</label>
 
@@ -864,46 +1330,177 @@
 </dialog>
 
 <!-- <------------------------------------------------
-			HELP WINDOW PLACEHOLDER
+			HELP WINDOW
 		 ------------------------------------------------->
 <dialog class="help-dialog" id="helpDialog">
 	<form method="dialog" class="help-dialog-content">
 		<header class="dialog-header">
-			<h2>Help</h2>
+			<h2>Help - Click category to open or close.</h2>
 			<button type="submit" class="dialog-close-button" id="closeHelpDialog">
 				Close
 			</button>
 		</header>
 
+<!-- <------------------------------------------------
+      EXPANDED HELP SYSTEM CONTENT
+     ------------------------------------------------->
+
 		<section class="help-section">
 			<h3>Getting Started</h3>
 			<p>
-				This Help section will explain each part of the app in simple step-by-step instructions.
+				The Ultimate Meal Planner helps you create a monthly meal calendar, save recipes, generate shopping lists, manage pantry items, print your calendar, and backup your data.
+			</p>
+			<p>
+				Start by adding recipes in Recipe Box. Then click a day on the calendar and assign meals from the left panel.
 			</p>
 		</section>
 
 		<section class="help-section">
-			<h3>Planned Help Topics</h3>
+			<h3>Monthly Calendar</h3>
 			<ul>
-				<li>Creating a monthly meal calendar</li>
-				<li>Adding and removing meal categories</li>
-				<li>Adding meals and recipes</li>
-				<li>Randomizing a calendar</li>
-				<li>Printing a one-page landscape calendar</li>
-				<li>Exporting a full backup</li>
-				<li>Importing a backup on another device</li>
-				<li>Sharing one recipe</li>
-				<li>Importing one recipe</li>
-				<li>Using the shopping list</li>
-				<li>Using the app offline</li>
-				<li>Changing themes and fonts</li>
+				<li>Use the Month and Year controls to choose the calendar you want to view.</li>
+				<li>Click Today to return to the current month.</li>
+				<li>Click Previous or Next to move between months.</li>
+				<li>Click Save if you want to manually save the current month.</li>
+				<li>The app also auto-saves many calendar changes.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Assign Meals</h3>
+			<ul>
+				<li>Click any active calendar day to open the Assign Meals panel.</li>
+				<li>Drag a recipe from the panel onto a calendar day.</li>
+				<li>If a recipe fits more than one meal category, choose the correct meal slot when prompted.</li>
+				<li>Drag a calendar meal to the Trash box in the Assign Meals panel to remove it from the calendar.</li>
+				<li>Use Filter Meals to show or hide Breakfast, Lunch, Dinner, or Snack/Dessert recipes.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Recipe Box</h3>
+			<ul>
+				<li>Open Recipe Box from the hamburger menu.</li>
+				<li>Click Add Recipe to create a new recipe.</li>
+				<li>Use Category Filter to view recipes by meal category.</li>
+				<li>Click a recipe card to view the full recipe.</li>
+				<li>Use Edit inside the recipe view to update an existing recipe.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Recipe Cards</h3>
+			<ul>
+				<li>Recipe Name is required.</li>
+				<li>Description, Prep Time, Cook Time, Total Time, Servings, Ingredients, Instructions, Notes, Nutrition, and Source URL are optional.</li>
+				<li>Enter one ingredient per line.</li>
+				<li>Description, Instructions, Notes, and Nutrition preserve line spacing in the recipe view.</li>
+				<li>Prep, Cook, and Total Time are shown in minutes.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Shopping List</h3>
+			<ul>
+				<li>Open Shopping List from the hamburger menu.</li>
+				<li>Click Generate to create a shopping list from the current calendar month.</li>
+				<li>Click Print to print the shopping list.</li>
+				<li>Click Share to share the shopping list when your device/browser supports native sharing.</li>
+				<li>Click Clear to remove the saved shopping list for the current month.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Pantry</h3>
+			<ul>
+				<li>Open Pantry from the hamburger menu.</li>
+				<li>Checked pantry items are treated as items you already have and are removed from generated shopping lists.</li>
+				<li>Unchecked pantry items appear as item-only with no measurements.</li>
+				<li>Add your own pantry item by typing it and clicking Add.</li>
+				<li>Drag a pantry item to the Trash box to delete it.</li>
+				<li>Pantry changes automatically update the saved shopping list for the current calendar month.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Conversion Chart</h3>
+			<ul>
+				<li>Open Conversion Chart from the hamburger menu.</li>
+				<li>Use it as a quick reference for common kitchen measurements.</li>
+				<li>The chart includes teaspoons, tablespoons, cups, pints, quarts, gallons, ounces, pounds, and common kitchen notes.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Printing</h3>
+			<ul>
+				<li>Use Print from the hamburger menu to print the monthly calendar.</li>
+				<li>The calendar is designed for one-page landscape printing.</li>
+				<li>Use Print inside the Shopping List window to print only the shopping list.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Sharing And Importing Recipes</h3>
+			<ul>
+				<li>Open a recipe from Recipe Box.</li>
+				<li>Click Share to share recipe text when supported by your device/browser.</li>
+				<li>Click Export to download a single recipe JSON file.</li>
+				<li>Use Import Recipe in Recipe Box to import a recipe JSON file.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Backup And Restore</h3>
+			<ul>
+				<li>Open Admin from the hamburger menu.</li>
+				<li>Click Export Full Backup to download a backup of your app data.</li>
+				<li>Click Import Backup to restore from a backup file.</li>
+				<li>Restoring a backup overwrites the current app database on that device.</li>
+				<li>Create a new full backup regularly, especially before wiping or moving data to another device.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Themes, Dark Mode, And Fonts</h3>
+			<ul>
+				<li>Open Theme from the hamburger menu to choose a color theme.</li>
+				<li>Use Dark Mode from the hamburger menu to switch between light and dark display modes.</li>
+				<li>Use Calendar Font to change the calendar title, month/year, and day number font.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Offline Use</h3>
+			<ul>
+				<li>The app is designed to work offline after it has loaded and the service worker is registered by the browser.</li>
+				<li>Your saved data is stored locally in the browser database on the device you are using.</li>
+				<li>Use Export Full Backup if you want a copy of your data outside the browser.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Wipe Database Safety</h3>
+			<ul>
+				<li>Wipe Database permanently clears app data stored on the current device/browser.</li>
+				<li>Always export a full backup first if you want to keep your data.</li>
+				<li>The app requires confirmation text before wiping the database.</li>
+			</ul>
+		</section>
+
+		<section class="help-section">
+			<h3>Troubleshooting Tips</h3>
+			<ul>
+				<li>If sharing is not supported, the app may download a text or JSON file instead.</li>
+				<li>If a recipe does not appear in Assign Meals, check its meal category.</li>
+				<li>If a shopping list looks wrong, check the recipe ingredients and Pantry settings.</li>
 			</ul>
 		</section>
 	</form>
 </dialog>
 
 <!-- <------------------------------------------------
-			ABOUT WINDOW PLACEHOLDER
+			ABOUT WINDOW
 		 ------------------------------------------------->
 <dialog class="about-dialog" id="aboutDialog">
 	<form method="dialog" class="about-dialog-content">
@@ -926,7 +1523,7 @@
 			<p><strong>Version:</strong> <span id="aboutAppVersion">1.00</span></p>
 			<p><strong>Credits:</strong> <span id="aboutAppCredits">Tre Thacker ~ 2026</span></p>
 			<p class="dedication-line" id="aboutAppDedication">
-				~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+				~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~
 			</p>
 		</div>
 	</form>

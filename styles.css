@@ -1,12 +1,12 @@
 /* <------------------------------------------------
       THE ULTIMATE MEAL PLANNER
       FILE: styles.css
-      VERSION: 1.00
+      VERSION: 1.00 Final
       CREDITS: Tre Thacker ~ 2026
-      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~
 
       CSS CHANGELOG:
-      VERSION 1.00 - Initial CSS foundation created.
+      VERSION 1.00 Final - Initial CSS foundation created.
    -------------------------------------------------> */
 
 /* <------------------------------------------------
@@ -228,6 +228,19 @@ body {
   gap: 14px;
 
   margin-top: 16px;
+
+}
+
+/* <------------------------------------------------
+      RECIPE TIME ROW
+   -------------------------------------------------> */
+
+.recipe-time-row {
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
 
 }
 
@@ -758,6 +771,202 @@ body.dark-mode .calendar-meal-name {
 }
 
 /* <------------------------------------------------
+      WELCOME WINDOW
+   -------------------------------------------------> */
+
+.welcome-dialog {
+
+  width: min(860px, 96vw);
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 14px;
+
+  padding: 0;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow: hidden;
+
+}
+
+.welcome-dialog-content {
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 12px 24px 18px;
+
+  text-align: center;
+
+}
+
+.welcome-app-icon {
+
+  width: 400px;
+  height: 400px;
+
+  object-fit: contain;
+
+  display: block;
+
+  margin: -52px 0 -68px;
+
+}
+
+/* <------------------------------------------------
+      WELCOME HEADER LAYOUT
+   -------------------------------------------------> */
+
+.welcome-header-layout {
+
+  display: grid;
+  grid-template-columns: auto 1fr;
+
+  align-items: center;
+
+  gap: 8px;
+
+  width: 100%;
+
+}
+
+.welcome-title-group {
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 4px;
+
+  min-width: 0;
+
+  text-align: center;
+
+}
+
+#welcomeAppTitle {
+
+  margin: 0;
+
+  white-space: nowrap;
+
+}
+
+/* <------------------------------------------------
+      WELCOME TITLE SPACING FIX
+   -------------------------------------------------> */
+
+#welcomeAppTitle {
+
+  margin: 0 0 2px 0;
+
+}
+
+.welcome-version-line,
+.welcome-credit-line,
+.welcome-dedication-line {
+
+  margin: 0;
+
+}
+
+.welcome-dedication-line {
+
+  color: var(--theme-accent);
+
+  font-style: italic;
+
+  font-size: 0.88rem;
+  line-height: 1.25;
+
+  margin: -4px 0 2px;
+
+  white-space: nowrap;
+
+}
+
+.welcome-message-section {
+
+  width: 100%;
+
+  padding: 14px 18px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  text-align: center;
+
+}
+
+.welcome-message-section h3 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 8px;
+
+  text-align: center;
+
+}
+
+.welcome-message-section p {
+
+  margin-bottom: 10px;
+
+}
+
+.welcome-hamburger-example {
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 30px;
+  height: 30px;
+
+  margin: 0 4px;
+
+  border-radius: 8px;
+
+  background: var(--theme-primary);
+  color: #ffffff;
+
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  vertical-align: middle;
+
+}
+
+.welcome-checkbox-row {
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 8px;
+
+  width: 100%;
+
+  color: var(--text-primary);
+
+  font-weight: 700;
+
+}
+
+/* <------------------------------------------------
       DIALOG FOUNDATION
    -------------------------------------------------> */
 
@@ -910,12 +1119,21 @@ body.dark-mode .calendar-meal-name {
 
   top: 0;
   right: 0;
-
-}
+	
+}	
 
 .help-section {
 
-  margin-bottom: 22px;
+  cursor: pointer;
+
+  padding: 14px;
+
+  margin-bottom: 16px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.16);
 
 }
 
@@ -923,7 +1141,49 @@ body.dark-mode .calendar-meal-name {
 
   color: var(--theme-primary);
 
+  margin-bottom: 0;
+
+}
+
+.help-section.open h3 {
+
   margin-bottom: 10px;
+
+}
+
+/* <------------------------------------------------
+      HELP ACCORDION SYSTEM
+   -------------------------------------------------> */
+
+.help-section p,
+.help-section ul {
+
+  display: none;
+
+}
+
+.help-section.open p,
+.help-section.open ul {
+
+  display: block;
+
+}
+
+.help-section p {
+
+  margin-bottom: 10px;
+
+}
+
+.help-section ul {
+
+  padding-left: 24px;
+
+}
+
+.help-section li {
+
+  margin-bottom: 7px;
 
 }
 
@@ -961,6 +1221,375 @@ body.dark-mode .dedication-line {
   color: var(--theme-secondary);
 
   font-weight: 700;
+
+}
+
+body.dark-mode .welcome-dedication-line {
+
+  color: var(--theme-secondary);
+
+  font-weight: 700;
+
+}
+
+/* <------------------------------------------------
+      CONVERSION CHART WINDOW
+   -------------------------------------------------> */
+
+.conversion-chart-dialog {
+
+  width: min(700px, 92vw);
+  max-height: 90vh;
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow: hidden;
+
+}
+
+.conversion-chart-content {
+
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+
+  height: min(78vh, 780px);
+
+  overflow: hidden;
+
+}
+
+.conversion-chart-body {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+
+  min-height: 0;
+
+  padding: 14px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+/* <------------------------------------------------
+      CONVERSION CHART SECTIONS
+   -------------------------------------------------> */
+
+.conversion-chart-section {
+
+  padding: 12px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: var(--panel-background);
+
+}
+
+.conversion-chart-section h3 {
+
+  color: var(--theme-primary);
+
+  margin-bottom: 8px;
+
+}
+
+.conversion-chart-list {
+
+  margin: 0;
+
+  padding-left: 24px;
+
+}
+
+.conversion-chart-list li {
+
+  margin-bottom: 6px;
+
+}
+
+/* <------------------------------------------------
+      PANTRY WINDOW
+   -------------------------------------------------> */
+
+.pantry-dialog {
+
+  width: min(620px, 92vw);
+  max-height: 90vh;
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow: hidden;
+
+}
+
+.pantry-content {
+
+  padding: 22px;
+
+  display: flex;
+  flex-direction: column;
+
+  height: min(78vh, 780px);
+
+  overflow: hidden;
+
+}
+
+.pantry-add-row {
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 86px;
+
+  gap: 10px;
+
+  align-items: stretch;
+
+  margin-top: 16px;
+  margin-bottom: 18px;
+
+}
+
+/* <------------------------------------------------
+      PANTRY TRASH DROPZONE
+   -------------------------------------------------> */
+
+.pantry-trash-dropzone {
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 4px;
+
+  min-height: 44px;
+
+  padding: 6px 8px;
+
+  border: 2px dashed var(--theme-primary);
+  border-radius: 10px;
+
+  color: var(--theme-primary);
+
+  font-size: 0.78rem;
+  font-weight: 700;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.14s ease;
+
+}
+
+.pantry-trash-icon {
+
+  font-size: 1rem;
+  line-height: 1;
+
+}
+
+.pantry-trash-label {
+
+  line-height: 1;
+
+}
+
+.pantry-trash-dropzone.drag-over-trash {
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+  transform: scale(1.04);
+
+}
+
+.pantry-item-list {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  flex: 1;
+	min-height: 0;
+
+  padding: 14px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+/* <------------------------------------------------
+      PANTRY ITEM ROWS
+   -------------------------------------------------> */
+
+.pantry-item-row {
+
+  cursor: grab;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  padding: 9px 10px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+
+  background: var(--panel-background);
+
+  user-select: none;
+
+}
+
+.pantry-item-row:active {
+
+  cursor: grabbing;
+
+}
+
+.pantry-item-row.dragging-pantry-item {
+
+  opacity: 0.45;
+
+  outline: 1px dashed var(--theme-primary);
+  outline-offset: 2px;
+
+}
+
+.pantry-item-label {
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  width: 100%;
+
+  color: var(--text-primary);
+
+  font-weight: 700;
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST WINDOW
+   -------------------------------------------------> */
+
+.shopping-list-dialog {
+
+  width: min(680px, 92vw);
+  max-height: 84vh;
+
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+
+  border: 4px solid var(--theme-primary);
+  border-radius: 12px;
+
+  padding: 14px;
+
+  background: var(--frosted-window-background);
+  backdrop-filter: var(--frosted-window-blur);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+.shopping-list-content {
+
+  padding: 22px;
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST LAYOUT
+   -------------------------------------------------> */
+
+.shopping-list-actions {
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 10px;
+
+  margin-bottom: 18px;
+
+}
+
+.shopping-list-items {
+
+  min-height: 180px;
+  max-height: 48vh;
+
+  padding: 14px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.16);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST BULLET SPACING
+   -------------------------------------------------> */
+
+.shopping-list-item-list {
+
+  margin: 0;
+  padding-left: 28px;
+
+}
+
+.shopping-list-item-list li {
+
+  margin-bottom: 6px;
 
 }
 
@@ -1266,7 +1895,78 @@ body.dark-mode .dedication-line {
 
   font-weight: 700;
 
-  margin-bottom: 16px;
+  margin-bottom: 6px;
+
+}
+
+/* <------------------------------------------------
+      RECIPE VIEW TIME ROW
+   -------------------------------------------------> */
+
+.recipe-view-time-row {
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+
+  margin-top: 4px;
+  margin-bottom: 12px;
+
+}
+
+.recipe-view-time-card {
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+
+  padding: 10px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  background: var(--panel-background);
+
+  text-align: center;
+
+}
+
+.recipe-view-servings {
+
+  margin-top: 0;
+  margin-bottom: 18px;
+
+  font-weight: 600;
+
+}
+
+/* <------------------------------------------------
+      RECIPE SPACING PRESERVATION
+   -------------------------------------------------> */
+
+.preserve-recipe-spacing {
+
+  white-space: pre-wrap;
+
+  word-break: break-word;
+
+}
+
+/* <------------------------------------------------
+      RECIPE INGREDIENT SPACING POLISH
+   -------------------------------------------------> */
+
+#recipeViewIngredients ul {
+
+  padding-left: 30px;
+
+}
+
+#recipeViewIngredients li {
+
+  padding-left: 6px;
 
 }
 
@@ -1292,13 +1992,10 @@ body.dark-mode .dedication-line {
 .admin-dialog,
 .wipe-dialog {
 
-  width: min(420px, 92vw);
-
   position: fixed;
   inset: 50% auto auto 50%;
   transform: translate(-50%, -50%);
 
-  border: 4px solid #b00020;
   border-radius: 12px;
 
   padding: 14px;
@@ -1311,6 +2008,23 @@ body.dark-mode .dedication-line {
 
 }
 
+.admin-dialog {
+
+  width: fit-content;
+  max-width: 92vw;
+
+  border: 4px solid var(--theme-primary);
+
+}
+
+.wipe-dialog {
+
+  width: min(420px, 92vw);
+
+  border: 4px solid #b00020;
+
+}
+
 .admin-dialog-content,
 .wipe-dialog-content {
 
@@ -1318,7 +2032,12 @@ body.dark-mode .dedication-line {
 
 }
 
-.admin-dialog h2,
+.admin-dialog h2 {
+
+  color: var(--theme-primary);
+
+}
+
 .wipe-dialog h2,
 .danger-text {
 
@@ -1332,6 +2051,14 @@ body.dark-mode .dedication-line {
   flex-direction: column;
 
   gap: 12px;
+
+}
+
+.admin-button-list .app-button {
+
+  width: 100%;
+
+  white-space: nowrap;
 
 }
 
@@ -1370,7 +2097,7 @@ body.dark-mode {
 }
 
 body.dark-mode dialog,
-body.dark-mode .pancake-menu {
+body.dark-mode .hamburger-menu {
 
   color: var(--text-primary);
 
@@ -1394,7 +2121,45 @@ body.dark-mode .text-area {
 
 }
 
+/* <------------------------------------------------
+      DARK MODE POPUP READABILITY FIXES
+   -------------------------------------------------> */
 
+body.dark-mode .recipe-view-section,
+body.dark-mode .shopping-list-items,
+body.dark-mode .pantry-item-list,
+body.dark-mode .conversion-chart-body {
+
+  background: rgba(255, 255, 255, 0.06);
+
+}
+
+body.dark-mode .recipe-view-time-card,
+body.dark-mode .conversion-chart-section,
+body.dark-mode .pantry-item-row,
+body.dark-mode .recipe-card {
+
+  background: #1d1d1d;
+
+  color: var(--text-primary);
+
+}
+
+body.dark-mode .dialog-close-button,
+body.dark-mode .slot-choice-option-button,
+body.dark-mode .assignment-filter-toggle {
+
+  background: var(--theme-primary);
+
+  color: var(--button-text);
+
+}
+
+body.dark-mode .slot-choice-option-button {
+
+  border-color: var(--theme-primary);
+
+}
 
 body.dark-mode .calendar-grid .calendar-day-cell.inactive-day {
 
@@ -1778,7 +2543,7 @@ body.assignment-panel-open .calendar-section {
 
 }
 
-.pancake-menu {
+.hamburger-menu {
 
   position: fixed;
 
@@ -1805,13 +2570,13 @@ body.assignment-panel-open .calendar-section {
 
 }
 
-.pancake-menu.open {
+.hamburger-menu.open {
 
   right: 0;
 
 }
 
-.pancake-menu-content {
+.hamburger-menu-content {
 
   display: flex;
   flex-direction: column;
@@ -1943,7 +2708,7 @@ body.assignment-panel-open .calendar-section {
 .calendar-toolbar,
 .calendar-screen-header,
 .menu-toggle-button,
-.pancake-menu,
+.hamburger-menu,
 .assignment-panel,
 .settings-dialog,
 .help-dialog,
@@ -2144,5 +2909,69 @@ body.assignment-panel-open .calendar-section {
     text-overflow: clip;
 
   }
+	
+/* <------------------------------------------------
+		SHOPPING LIST PRINT MODE
+ -------------------------------------------------> */
+
+	body.printing-shopping-list * {
+
+		visibility: hidden !important;
+
+	}
+
+	body.printing-shopping-list .shopping-list-dialog,
+	body.printing-shopping-list .shopping-list-dialog *,
+	body.printing-shopping-list .shopping-list-content,
+	body.printing-shopping-list .shopping-list-content * {
+
+		visibility: visible !important;
+
+	}
+
+	body.printing-shopping-list .shopping-list-dialog {
+
+		position: static !important;
+		inset: auto !important;
+		transform: none !important;
+
+		width: 100% !important;
+		max-width: none !important;
+		max-height: none !important;
+
+		border: none !important;
+		box-shadow: none !important;
+
+		background: #ffffff !important;
+
+		padding: 0 !important;
+		margin: 0 !important;
+
+	}
+
+	body.printing-shopping-list .shopping-list-content {
+
+		padding: 0 !important;
+
+	}
+
+	body.printing-shopping-list .dialog-close-button,
+	body.printing-shopping-list .shopping-list-actions {
+
+		display: none !important;
+
+	}
+
+	body.printing-shopping-list .shopping-list-items {
+
+		border: none !important;
+		background: #ffffff !important;
+
+		max-height: none !important;
+		overflow: visible !important;
+
+		color: #000000 !important;
+
+	}
 
 }

@@ -1,12 +1,12 @@
 /* <------------------------------------------------
       THE ULTIMATE MEAL PLANNER
       FILE: app.js
-      VERSION: 1.00
+      VERSION: 1.00 Final
       CREDITS: Tre Thacker ~ 2026
-      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
+      DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~
 
       JAVASCRIPT CHANGELOG:
-      VERSION 1.00 - Initial JavaScript foundation created.
+      VERSION 1.00 Final - Initial JavaScript foundation created.
    -------------------------------------------------> */
 
 /* <------------------------------------------------
@@ -14,9 +14,9 @@
    -------------------------------------------------> */
 
 const APP_TITLE = "The Ultimate Meal Planner";
-const APP_VERSION = "1.00";
+const APP_VERSION = "1.00 Final";
 const APP_CREDITS = "Tre Thacker ~ 2026";
-const APP_DEDICATION = "~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~";
+const APP_DEDICATION = "~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~";
 
 /* <------------------------------------------------
       MEAL CATEGORY CONSTANTS
@@ -31,6 +31,33 @@ const MEAL_CATEGORIES = [
 
 const DEFAULT_MONTH_CATEGORIES = [
   "Dinner"
+];
+
+/* <------------------------------------------------
+      DEFAULT PANTRY STARTER ITEMS
+   -------------------------------------------------> */
+
+const DEFAULT_PANTRY_ITEMS = [
+  { id: "pantry-salt", name: "Salt", checked: false },
+  { id: "pantry-pepper", name: "Pepper", checked: false },
+  { id: "pantry-sugar", name: "Sugar", checked: false },
+  { id: "pantry-flour", name: "Flour", checked: false },
+  { id: "pantry-brown-sugar", name: "Brown Sugar", checked: false },
+  { id: "pantry-powdered-sugar", name: "Powdered Sugar", checked: false },
+  { id: "pantry-baking-soda", name: "Baking Soda", checked: false },
+  { id: "pantry-baking-powder", name: "Baking Powder", checked: false },
+  { id: "pantry-vanilla", name: "Vanilla", checked: false },
+  { id: "pantry-cinnamon", name: "Cinnamon", checked: false },
+  { id: "pantry-paprika", name: "Paprika", checked: false },
+  { id: "pantry-garlic-powder", name: "Garlic Powder", checked: false },
+  { id: "pantry-onion-powder", name: "Onion Powder", checked: false },
+  { id: "pantry-italian-seasoning", name: "Italian Seasoning", checked: false },
+  { id: "pantry-olive-oil", name: "Olive Oil", checked: false },
+  { id: "pantry-vegetable-oil", name: "Vegetable Oil", checked: false },
+  { id: "pantry-butter", name: "Butter", checked: false },
+  { id: "pantry-coffee", name: "Coffee", checked: false },
+  { id: "pantry-tea", name: "Tea", checked: false },
+	{ id: "pantry-milk", name: "Milk", checked: false }
 ];
 
 /* <------------------------------------------------
@@ -236,13 +263,14 @@ const THEME_PRESETS = {
    -------------------------------------------------> */
 
 const DATABASE_NAME = "UltimateMealPlannerDatabase";
-const DATABASE_VERSION = 1;
+const DATABASE_VERSION = 2;
 
 const DATABASE_STORES = {
   settings: "settings",
   recipes: "recipes",
   calendarMonths: "calendarMonths",
-  shoppingLists: "shoppingLists"
+  shoppingLists: "shoppingLists",
+	pantryItems: "pantryItems"
 };
 
 /* <------------------------------------------------
@@ -292,6 +320,7 @@ const appState = {
 	calendarMonthsBySlot: {},
 	recipes: [],
 	shoppingLists: [],
+	pantryItems: [],
 	selectedAssignmentDay: null,
 	viewedRecipeId: null,
 	pendingSlotChoice: null
@@ -317,9 +346,18 @@ try {
 
 	appState.shoppingLists = await getAllShoppingListsFromDatabase();
 	console.log(`${appState.shoppingLists.length} shopping lists loaded.`);
-} catch (error) {
-  console.warn("IndexedDB could not be opened. Temporary session data will still work.", error);
-}
+
+	appState.pantryItems = await getAllPantryItemsFromDatabase();
+
+	if (appState.pantryItems.length === 0) {
+		appState.pantryItems = structuredClone(DEFAULT_PANTRY_ITEMS);
+		await saveDefaultPantryItemsToDatabase();
+	}
+
+	console.log(`${appState.pantryItems.length} pantry items loaded.`);
+	} catch (error) {
+		console.warn("IndexedDB could not be opened. Temporary session data will still work.", error);
+	}
 
 applyInitialDateValues();
 	applySettingsToScreen();
@@ -327,6 +365,8 @@ applyInitialDateValues();
 	await loadCurrentMonthFoundation();
 	connectBaseEventListeners();
   registerServiceWorker();
+	
+	showWelcomeDialogIfNeeded();
 
   console.log(`${APP_TITLE} Version ${APP_VERSION} loaded successfully.`);
 }
@@ -368,6 +408,10 @@ function openAppDatabase() {
       });
 
       createObjectStoreIfMissing(database, DATABASE_STORES.shoppingLists, {
+        keyPath: "id"
+      });
+
+      createObjectStoreIfMissing(database, DATABASE_STORES.pantryItems, {
         keyPath: "id"
       });
     };
@@ -506,8 +550,14 @@ function createRecipeRecord(recipeData) {
     title: recipeData.title || "Untitled Meal",
     categories: sanitizeRecipeCategories(recipeData.categories),
 		description: recipeData.description || "",
+		prepTime: recipeData.prepTime || "",
+		cookTime: recipeData.cookTime || "",
+		totalTime: recipeData.totalTime || "",
+		servings: recipeData.servings || "",
 		ingredients: Array.isArray(recipeData.ingredients) ? recipeData.ingredients : [],
     instructions: recipeData.instructions || "",
+		notes: recipeData.notes || "",
+		nutrition: recipeData.nutrition || "",
     sourceUrl: recipeData.sourceUrl || "",
     createdAt: recipeData.createdAt || currentTimestamp,
     updatedAt: currentTimestamp
@@ -647,6 +697,79 @@ function getAllShoppingListsFromDatabase() {
   });
 }
 
+/* <------------------------------------------------
+      PANTRY ITEMS STORE
+   -------------------------------------------------> */
+
+function getAllPantryItemsFromDatabase() {
+
+  return new Promise((resolve, reject) => {
+    const store = getDatabaseStore(DATABASE_STORES.pantryItems, "readonly");
+
+    if (!store) {
+      resolve([]);
+      return;
+    }
+
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+      resolve(request.result || []);
+    };
+
+    request.onerror = () => {
+      reject(request.error);
+    };
+  });
+
+}
+
+async function savePantryItemToDatabase(pantryItem) {
+
+  try {
+    await saveRecordToStore(DATABASE_STORES.pantryItems, pantryItem);
+    return pantryItem;
+  } catch (error) {
+    console.warn("Pantry item could not be saved.", error);
+    return null;
+  }
+
+}
+
+async function saveDefaultPantryItemsToDatabase() {
+
+  for (const pantryItem of appState.pantryItems) {
+    await savePantryItemToDatabase(pantryItem);
+  }
+
+}
+
+async function deletePantryItemFromDatabase(pantryItemId) {
+
+  try {
+    const store = getDatabaseStore(DATABASE_STORES.pantryItems, "readwrite");
+
+    if (!store) {
+      return;
+    }
+
+    await new Promise((resolve, reject) => {
+      const request = store.delete(pantryItemId);
+
+      request.onsuccess = () => {
+        resolve();
+      };
+
+      request.onerror = () => {
+        reject(request.error);
+      };
+    });
+  } catch (error) {
+    console.warn("Pantry item could not be deleted.", error);
+  }
+
+}
+
 async function deleteShoppingListFromDatabase(shoppingListId) {
   try {
     const store = getDatabaseStore(DATABASE_STORES.shoppingLists, "readwrite");
@@ -692,9 +815,14 @@ function collectDomReferences() {
 	
 	DOM.menuToggleButton = document.getElementById("menuToggleButton");
 	DOM.toggleDarkModeButton = document.getElementById("toggleDarkModeButton");
-	DOM.pancakeMenu = document.getElementById("pancakeMenu");
+	DOM.hamburgerMenu = document.getElementById("hamburgerMenu");
 	DOM.menuPrintButton = document.getElementById("menuPrintButton");
 	DOM.menuRecipeBoxButton = document.getElementById("menuRecipeBoxButton");
+	DOM.menuShoppingListButton = document.getElementById("menuShoppingListButton");
+	DOM.menuPantryButton = document.getElementById("menuPantryButton");	
+	
+	DOM.menuConversionChartButton = document.getElementById("menuConversionChartButton");	
+	
 	DOM.menuAdminButton = document.getElementById("menuAdminButton");
 	DOM.menuThemeButton = document.getElementById("menuThemeButton");
 	DOM.menuAboutButton = document.getElementById("menuAboutButton");
@@ -735,14 +863,26 @@ function collectDomReferences() {
 	DOM.themeFontDialog = document.getElementById("themeFontDialog");
 	DOM.themePresetSelect = document.getElementById("themePresetSelect");
 	DOM.calendarFontSelect = document.getElementById("calendarFontSelect");
+	
 	DOM.themeCalendarIcon = document.getElementById("themeCalendarIcon");
+	
 	DOM.helpDialog = document.getElementById("helpDialog");
+	DOM.helpSections = Array.from(document.querySelectorAll(".help-section"));
+	
 	DOM.aboutDialog = document.getElementById("aboutDialog");
-
   DOM.aboutAppTitle = document.getElementById("aboutAppTitle");
   DOM.aboutAppVersion = document.getElementById("aboutAppVersion");
   DOM.aboutAppCredits = document.getElementById("aboutAppCredits");
   DOM.aboutAppDedication = document.getElementById("aboutAppDedication");
+	
+	DOM.welcomeDialog = document.getElementById("welcomeDialog");
+	DOM.welcomeAppTitle = document.getElementById("welcomeAppTitle");
+	DOM.welcomeAppVersion = document.getElementById("welcomeAppVersion");
+	DOM.welcomeAppCredits = document.getElementById("welcomeAppCredits");
+	DOM.welcomeAppDedication = document.getElementById("welcomeAppDedication");
+	DOM.doNotShowWelcomeAgainCheckbox = document.getElementById("doNotShowWelcomeAgainCheckbox");
+	DOM.closeWelcomeButton = document.getElementById("closeWelcomeButton");	
+	
 	DOM.addRecipeButton = document.getElementById("addRecipeButton");
 	DOM.recipeList = document.getElementById("recipeList");
 	DOM.recipeDialog = document.getElementById("recipeDialog");
@@ -751,17 +891,44 @@ function collectDomReferences() {
 	DOM.recipeIdInput = document.getElementById("recipeIdInput");
 	DOM.recipeTitleInput = document.getElementById("recipeTitleInput");
 	DOM.recipeDescriptionInput = document.getElementById("recipeDescriptionInput");
+	DOM.recipePrepTimeInput = document.getElementById("recipePrepTimeInput");
+	DOM.recipeCookTimeInput = document.getElementById("recipeCookTimeInput");
+	DOM.recipeTotalTimeInput = document.getElementById("recipeTotalTimeInput");
+	DOM.recipeServingsInput = document.getElementById("recipeServingsInput");
 	DOM.recipeIngredientsInput = document.getElementById("recipeIngredientsInput");
 	DOM.recipeInstructionsInput = document.getElementById("recipeInstructionsInput");
+	DOM.recipeNotesInput = document.getElementById("recipeNotesInput");
+	DOM.recipeNutritionInput = document.getElementById("recipeNutritionInput");
 	DOM.recipeSourceUrlInput = document.getElementById("recipeSourceUrlInput");
 	DOM.cancelRecipeButton = document.getElementById("cancelRecipeButton");
 	DOM.deleteRecipeButton = document.getElementById("deleteRecipeButton");
 	DOM.recipeCategoryCheckboxes = Array.from(document.querySelectorAll(".recipe-category-checkbox"));
 	
+	DOM.conversionChartDialog = document.getElementById("conversionChartDialog");
+	DOM.closeConversionChartButton = document.getElementById("closeConversionChartButton");
+	DOM.conversionChartBody = document.getElementById("conversionChartBody");
+	
+	DOM.pantryDialog = document.getElementById("pantryDialog");
+	DOM.closePantryButton = document.getElementById("closePantryButton");
+	DOM.pantryItemInput = document.getElementById("pantryItemInput");
+	DOM.addPantryItemButton = document.getElementById("addPantryItemButton");
+	DOM.pantryItemList = document.getElementById("pantryItemList");
+	DOM.pantryTrashDropzone = document.getElementById("pantryTrashDropzone");
+	
+	DOM.shoppingListDialog = document.getElementById("shoppingListDialog");
+	DOM.closeShoppingListButton = document.getElementById("closeShoppingListButton");
+	DOM.generateShoppingListButton = document.getElementById("generateShoppingListButton");
+	DOM.printShoppingListButton = document.getElementById("printShoppingListButton");
+	DOM.shareShoppingListButton = document.getElementById("shareShoppingListButton");
+	DOM.clearShoppingListButton = document.getElementById("clearShoppingListButton");
+	DOM.shoppingListItems = document.getElementById("shoppingListItems");
+	
 	DOM.recipeBoxDialog = document.getElementById("recipeBoxDialog");
 	DOM.closeRecipeBoxButton = document.getElementById("closeRecipeBoxButton");
 	DOM.recipeBoxFilterSelect = document.getElementById("recipeBoxFilterSelect");
 	DOM.recipeBoxAddRecipeButton = document.getElementById("recipeBoxAddRecipeButton");
+	DOM.recipeBoxImportRecipeButton = document.getElementById("recipeBoxImportRecipeButton");
+	DOM.importRecipeFileInput = document.getElementById("importRecipeFileInput");
 	DOM.recipeBoxList = document.getElementById("recipeBoxList");
 	
 	DOM.recipeViewDialog = document.getElementById("recipeViewDialog");
@@ -769,11 +936,19 @@ function collectDomReferences() {
 	DOM.recipeViewTitle = document.getElementById("recipeViewTitle");
 	DOM.recipeViewDescription = document.getElementById("recipeViewDescription");
 	DOM.recipeViewCategories = document.getElementById("recipeViewCategories");
+	DOM.recipeViewTimeRow = document.getElementById("recipeViewTimeRow");
+	DOM.recipeViewPrepTime = document.getElementById("recipeViewPrepTime");
+	DOM.recipeViewCookTime = document.getElementById("recipeViewCookTime");
+	DOM.recipeViewTotalTime = document.getElementById("recipeViewTotalTime");
+	DOM.recipeViewServings = document.getElementById("recipeViewServings");
 	DOM.recipeViewIngredients = document.getElementById("recipeViewIngredients");
 	DOM.recipeViewInstructions = document.getElementById("recipeViewInstructions");
+	DOM.recipeViewNotes = document.getElementById("recipeViewNotes");
+	DOM.recipeViewNutrition = document.getElementById("recipeViewNutrition");
 	DOM.recipeViewSource = document.getElementById("recipeViewSource");
 	DOM.editViewedRecipeButton = document.getElementById("editViewedRecipeButton");
 	DOM.shareViewedRecipeButton = document.getElementById("shareViewedRecipeButton");
+	DOM.exportViewedRecipeButton = document.getElementById("exportViewedRecipeButton");
 	
 	DOM.assignmentPanel = document.getElementById("assignmentPanel");
 	DOM.closeAssignmentPanelButton = document.getElementById("closeAssignmentPanelButton");
@@ -793,6 +968,44 @@ function collectDomReferences() {
 	DOM.slotChoiceOptions = document.getElementById("slotChoiceOptions");
 	DOM.cancelSlotChoiceButton = document.getElementById("cancelSlotChoiceButton");
 	DOM.assignmentFilterCheckboxes = Array.from(document.querySelectorAll(".assignment-filter-checkbox"));
+}
+
+/* <------------------------------------------------
+      WELCOME WINDOW SYSTEM
+   -------------------------------------------------> */
+
+function shouldShowWelcomeDialog() {
+
+  return appState.settings.hideWelcomeScreen !== true;
+
+}
+
+function showWelcomeDialogIfNeeded() {
+
+  if (!DOM.welcomeDialog) {
+    return;
+  }
+
+  if (!shouldShowWelcomeDialog()) {
+    return;
+  }
+
+  openDialog(DOM.welcomeDialog);
+
+}
+
+async function closeWelcomeDialog() {
+
+  if (DOM.doNotShowWelcomeAgainCheckbox?.checked) {
+    appState.settings.hideWelcomeScreen = true;
+
+    await saveSettingsToDatabase();
+  }
+
+  if (DOM.welcomeDialog) {
+    DOM.welcomeDialog.close();
+  }
+
 }
 
 /* <------------------------------------------------
@@ -819,6 +1032,23 @@ function applyAppInformation() {
   if (DOM.aboutAppDedication) {
     DOM.aboutAppDedication.textContent = APP_DEDICATION;
   }
+	
+	  if (DOM.welcomeAppTitle) {
+    DOM.welcomeAppTitle.textContent = APP_TITLE;
+  }
+
+  if (DOM.welcomeAppVersion) {
+    DOM.welcomeAppVersion.textContent = APP_VERSION;
+  }
+
+  if (DOM.welcomeAppCredits) {
+    DOM.welcomeAppCredits.textContent = APP_CREDITS;
+  }
+
+  if (DOM.welcomeAppDedication) {
+    DOM.welcomeAppDedication.textContent = APP_DEDICATION;
+  }
+	
 }
 
 /* <------------------------------------------------
@@ -998,8 +1228,12 @@ function connectBaseEventListeners() {
     DOM.nextMonthButton.addEventListener("click", goToNextMonth);
   }
 	
+	if (DOM.closeWelcomeButton) {
+		DOM.closeWelcomeButton.addEventListener("click", closeWelcomeDialog);
+	}
+	
 	if (DOM.menuToggleButton) {
-  DOM.menuToggleButton.addEventListener("click", togglePancakeMenu);
+  DOM.menuToggleButton.addEventListener("click", toggleHamburgerMenu);
 	}
 	
 	if (DOM.toggleDarkModeButton) {
@@ -1016,42 +1250,66 @@ function connectBaseEventListeners() {
 
 	if (DOM.menuPrintButton) {
 		DOM.menuPrintButton.addEventListener("click", () => {
-			closePancakeMenu();
+			closeHamburgerMenu();
 			window.print();
 		});
 	}
 
 	if (DOM.menuRecipeBoxButton) {
 		DOM.menuRecipeBoxButton.addEventListener("click", () => {
-			closePancakeMenu();
+			closeHamburgerMenu();
 			openRecipeBoxDialog();
+		});
+	}
+	
+		if (DOM.menuConversionChartButton) {
+			DOM.menuConversionChartButton.addEventListener("click", () => {
+				closeHamburgerMenu();
+				renderConversionChart();
+				openDialog(DOM.conversionChartDialog);
+			});
+		}
+	
+		if (DOM.menuPantryButton) {
+		DOM.menuPantryButton.addEventListener("click", () => {
+			closeHamburgerMenu();
+			renderPantryItemList();
+			openDialog(DOM.pantryDialog);
+		});
+	}
+	
+	if (DOM.menuShoppingListButton) {
+		DOM.menuShoppingListButton.addEventListener("click", () => {
+			closeHamburgerMenu();
+			loadCurrentShoppingListDisplay();
+			openDialog(DOM.shoppingListDialog);
 		});
 	}
 
 	if (DOM.menuAdminButton) {
 		DOM.menuAdminButton.addEventListener("click", () => {
-			closePancakeMenu();
+			closeHamburgerMenu();
 			openDialog(DOM.adminDialog);
 		});
 	}
 
 	if (DOM.menuThemeButton) {
 		DOM.menuThemeButton.addEventListener("click", () => {
-			closePancakeMenu();
+			closeHamburgerMenu();
 			openDialog(DOM.themeFontDialog);
 		});
 	}
 
 	if (DOM.menuAboutButton) {
 		DOM.menuAboutButton.addEventListener("click", () => {
-			closePancakeMenu();
+			closeHamburgerMenu();
 			openDialog(DOM.aboutDialog);
 		});
 	}
 
 	if (DOM.menuHelpButton) {
 		DOM.menuHelpButton.addEventListener("click", () => {
-			closePancakeMenu();
+			closeHamburgerMenu();
 			openDialog(DOM.helpDialog);
 		});
 	}
@@ -1063,6 +1321,16 @@ function connectBaseEventListeners() {
 	if (DOM.helpButton) {
 		DOM.helpButton.addEventListener("click", () => openDialog(DOM.helpDialog));
 	}
+	
+		DOM.helpSections.forEach((helpSection) => {
+
+		helpSection.addEventListener("click", () => {
+
+			helpSection.classList.toggle("open");
+
+		});
+
+	});
 
   if (DOM.printButton) {
     DOM.printButton.addEventListener("click", () => window.print());
@@ -1110,6 +1378,14 @@ function connectBaseEventListeners() {
 	
 	if (DOM.exportCalendarCsvButton) {
 		DOM.exportCalendarCsvButton.addEventListener("click", exportCalendarCsv);
+	}
+	
+	if (DOM.shareViewedRecipeButton) {
+		DOM.shareViewedRecipeButton.addEventListener("click", shareViewedRecipe);
+	}
+	
+	if (DOM.exportViewedRecipeButton) {
+		DOM.exportViewedRecipeButton.addEventListener("click", exportViewedRecipe);
 	}
 
 	if (DOM.wipeDatabaseButton) {
@@ -1186,6 +1462,80 @@ function connectBaseEventListeners() {
   });
 }
 	
+		if (DOM.closeConversionChartButton) {
+			DOM.closeConversionChartButton.addEventListener("click", closeConversionChartDialog);
+		}
+	
+	if (DOM.closePantryButton) {
+		DOM.closePantryButton.addEventListener("click", closePantryDialog);
+	}
+	
+	if (DOM.addPantryItemButton) {
+		DOM.addPantryItemButton.addEventListener("click", addPantryItemFromInput);
+	}
+	
+		if (DOM.pantryItemInput) {
+		DOM.pantryItemInput.addEventListener("keydown", (event) => {
+
+			if (event.key !== "Enter") {
+				return;
+			}
+
+			event.preventDefault();
+			addPantryItemFromInput();
+
+		});
+	}
+	
+		if (DOM.pantryTrashDropzone) {
+
+		DOM.pantryTrashDropzone.addEventListener("dragover", (event) => {
+			event.preventDefault();
+			DOM.pantryTrashDropzone.classList.add("drag-over-trash");
+		});
+
+		DOM.pantryTrashDropzone.addEventListener("dragleave", () => {
+			DOM.pantryTrashDropzone.classList.remove("drag-over-trash");
+		});
+
+		DOM.pantryTrashDropzone.addEventListener("drop", async (event) => {
+			event.preventDefault();
+
+			DOM.pantryTrashDropzone.classList.remove("drag-over-trash");
+
+			const pantryItemId =
+				event.dataTransfer.getData("application/x-pantry-item");
+
+			if (!pantryItemId) {
+				return;
+			}
+
+			await deletePantryItem(pantryItemId);
+
+		});
+
+	}
+	
+	if (DOM.closeShoppingListButton) {
+		DOM.closeShoppingListButton.addEventListener("click", closeShoppingListDialog);
+	}
+	
+	if (DOM.generateShoppingListButton) {
+		DOM.generateShoppingListButton.addEventListener("click", generateShoppingListFromCalendar);
+	}
+	
+	if (DOM.printShoppingListButton) {
+		DOM.printShoppingListButton.addEventListener("click", printShoppingList);
+	}
+	
+	if (DOM.shareShoppingListButton) {
+		DOM.shareShoppingListButton.addEventListener("click", shareShoppingList);
+	}
+
+	if (DOM.clearShoppingListButton) {
+		DOM.clearShoppingListButton.addEventListener("click", clearShoppingListDisplay);
+	}
+	
 	if (DOM.closeRecipeBoxButton) {
 		DOM.closeRecipeBoxButton.addEventListener("click", closeRecipeBoxDialog);
 	}
@@ -1198,16 +1548,20 @@ function connectBaseEventListeners() {
 		DOM.recipeBoxAddRecipeButton.addEventListener("click", openNewRecipeDialog);
   }
 	
+	if (DOM.recipeBoxImportRecipeButton) {
+		DOM.recipeBoxImportRecipeButton.addEventListener("click", openSingleRecipeImportFilePicker);
+	}
+	
+	if (DOM.importRecipeFileInput) {
+		DOM.importRecipeFileInput.addEventListener("change", handleSingleRecipeImportFileSelection);
+	}
+	
 	if (DOM.closeRecipeViewButton) {
   DOM.closeRecipeViewButton.addEventListener("click", closeRecipeViewDialog);
   }
 
 	if (DOM.editViewedRecipeButton) {
 		DOM.editViewedRecipeButton.addEventListener("click", editCurrentlyViewedRecipe);
-	}
-
-	if (DOM.shareViewedRecipeButton) {
-		DOM.shareViewedRecipeButton.addEventListener("click", showFeatureComingLaterMessage);
 	}
 	
 	if (DOM.cancelSlotChoiceButton) {
@@ -1306,6 +1660,271 @@ function updateCalendarTitleDisplays() {
 
 function handleCalendarNameInput() {
   updateCalendarTitleFromInput();
+}
+
+/* <------------------------------------------------
+      SINGLE RECIPE SHARE SYSTEM
+   -------------------------------------------------> */
+
+async function shareViewedRecipe() {
+
+  if (!appState.viewedRecipeId) {
+    alert("No recipe is currently selected.");
+    return;
+  }
+
+  const recipe =
+    getRecipeById(appState.viewedRecipeId);
+
+  if (!recipe) {
+    alert("Unable to find recipe.");
+    return;
+  }
+
+  const recipeText =
+    buildRecipeShareText(recipe);
+
+  if (navigator.share) {
+
+    try {
+
+      await navigator.share({
+        title: recipe.title,
+        text: recipeText
+      });
+
+      return;
+
+    } catch (error) {
+
+      console.warn(
+        "Native recipe share unavailable.",
+        error
+      );
+
+    }
+
+  }
+
+  downloadRecipeTextFile(recipe, recipeText);
+
+  alert(
+    "Native sharing is not supported on this device/browser.\n\nRecipe text file downloaded instead."
+  );
+
+}
+
+function buildRecipeShareText(recipe) {
+
+  const lines = [
+    recipe.title || "Recipe",
+    ""
+  ];
+
+  if (recipe.description) {
+    lines.push("Description:");
+    lines.push(recipe.description);
+    lines.push("");
+  }
+
+  if (Array.isArray(recipe.categories) && recipe.categories.length > 0) {
+    lines.push("Categories:");
+    lines.push(recipe.categories.join(", "));
+    lines.push("");
+  }
+
+  if (Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0) {
+    lines.push("Ingredients:");
+
+    recipe.ingredients.forEach((ingredient) => {
+      lines.push(`- ${ingredient}`);
+    });
+
+    lines.push("");
+  }
+
+  if (recipe.instructions) {
+    lines.push("Instructions:");
+    lines.push(recipe.instructions);
+    lines.push("");
+  }
+
+  if (recipe.sourceUrl) {
+    lines.push("Source:");
+    lines.push(recipe.sourceUrl);
+  }
+
+  return lines.join("\n");
+
+}
+
+function downloadRecipeTextFile(recipe, recipeText) {
+
+  const textBlob =
+    new Blob(
+      [recipeText],
+      {
+        type: "text/plain"
+      }
+    );
+
+  const downloadUrl =
+    URL.createObjectURL(textBlob);
+
+  const downloadLink =
+    document.createElement("a");
+
+  downloadLink.href = downloadUrl;
+  downloadLink.download =
+    buildRecipeTextFileName(recipe);
+
+  document.body.appendChild(downloadLink);
+
+  downloadLink.click();
+
+  downloadLink.remove();
+
+  URL.revokeObjectURL(downloadUrl);
+
+}
+
+function buildRecipeTextFileName(recipe) {
+
+  const safeTitle =
+    (recipe.title || "Recipe")
+      .replace(/[<>:"/\\|?*]+/g, "")
+      .trim()
+      .replace(/\s+/g, "_");
+
+  return `TUMP_Recipe_${safeTitle}.txt`;
+
+}
+
+/* <------------------------------------------------
+      SINGLE RECIPE EXPORT SYSTEM
+     -------------------------------------------------> */
+
+async function exportViewedRecipe() {
+
+  if (!appState.viewedRecipeId) {
+    alert("No recipe is currently selected.");
+    return;
+  }
+
+  const recipe =
+    getRecipeById(appState.viewedRecipeId);
+
+  if (!recipe) {
+    alert("Unable to find recipe.");
+    return;
+  }
+
+  const exportData = {
+    appTitle: APP_TITLE,
+    appVersion: APP_VERSION,
+    exportType: "single-recipe",
+    createdAt: new Date().toISOString(),
+    recipe
+  };
+
+  const exportJson =
+    JSON.stringify(exportData, null, 2);
+
+  const fileName =
+    buildRecipeExportFileName(recipe);
+
+  const exportBlob =
+    new Blob(
+      [exportJson],
+      {
+        type: "application/json"
+      }
+    );
+
+  /* <------------------------------------------------
+      NATIVE DEVICE SHARE SUPPORT
+   -------------------------------------------------> */
+
+  if (
+    navigator.share &&
+    navigator.canShare
+  ) {
+
+    try {
+
+      const shareFile =
+        new File(
+          [exportBlob],
+          fileName,
+          {
+            type: "application/json"
+          }
+        );
+
+      if (
+        navigator.canShare({
+          files: [shareFile]
+        })
+      ) {
+
+        await navigator.share({
+          title: recipe.title,
+          text: `Recipe shared from ${APP_TITLE}`,
+          files: [shareFile]
+        });
+
+        return;
+
+      }
+
+    } catch (error) {
+
+      console.warn(
+        "Native share unavailable. Falling back to download.",
+        error
+      );
+
+    }
+
+  }
+
+  /* <------------------------------------------------
+      DOWNLOAD FALLBACK
+   -------------------------------------------------> */
+
+  const downloadUrl =
+    URL.createObjectURL(exportBlob);
+
+  const downloadLink =
+    document.createElement("a");
+
+  downloadLink.href = downloadUrl;
+  downloadLink.download = fileName;
+
+  document.body.appendChild(downloadLink);
+
+  downloadLink.click();
+
+  downloadLink.remove();
+
+  URL.revokeObjectURL(downloadUrl);
+
+  alert(
+    "Native sharing is not supported on this device/browser.\n\nRecipe file downloaded instead."
+  );
+
+}
+
+function buildRecipeExportFileName(recipe) {
+
+  const safeTitle =
+    (recipe.title || "Recipe")
+      .replace(/[<>:"/\\|?*]+/g, "")
+      .trim()
+      .replace(/\s+/g, "_");
+
+  return `TUMP_Recipe_${safeTitle}.json`;
+
 }
 
 /* <------------------------------------------------
@@ -1494,7 +2113,8 @@ function validateBackupData(backupData) {
     "settings",
     "recipes",
     "calendarMonths",
-    "shoppingLists"
+    "shoppingLists",
+		"pantryItems"
   ];
 
   requiredStores.forEach((storeName) => {
@@ -1515,11 +2135,13 @@ async function restoreFullDatabaseBackup(backupData) {
   await clearStore(DATABASE_STORES.recipes);
   await clearStore(DATABASE_STORES.calendarMonths);
   await clearStore(DATABASE_STORES.shoppingLists);
+	await clearStore(DATABASE_STORES.pantryItems);
 
   await restoreRecordsToStore(DATABASE_STORES.settings, backupData.data.settings);
   await restoreRecordsToStore(DATABASE_STORES.recipes, backupData.data.recipes);
   await restoreRecordsToStore(DATABASE_STORES.calendarMonths, backupData.data.calendarMonths);
   await restoreRecordsToStore(DATABASE_STORES.shoppingLists, backupData.data.shoppingLists);
+	await restoreRecordsToStore(DATABASE_STORES.pantryItems, backupData.data.pantryItems);
 
 }
 
@@ -1594,6 +2216,7 @@ async function exportFullDatabaseBackup() {
 	const savedRecipeRecords = await getAllRecordsFromStore(DATABASE_STORES.recipes);
 	const savedCalendarMonthRecords = await getAllRecordsFromStore(DATABASE_STORES.calendarMonths);
 	const savedShoppingListRecords = await getAllRecordsFromStore(DATABASE_STORES.shoppingLists);
+	const savedPantryItemRecords = await getAllRecordsFromStore(DATABASE_STORES.pantryItems);
 
   const backupData = {
     appTitle: APP_TITLE,
@@ -1606,7 +2229,8 @@ async function exportFullDatabaseBackup() {
 			settings: savedSettingsRecords,
 			recipes: savedRecipeRecords,
 			calendarMonths: savedCalendarMonthRecords,
-			shoppingLists: savedShoppingListRecords
+			shoppingLists: savedShoppingListRecords,
+			pantryItems: savedPantryItemRecords
 		}
   };
 
@@ -1634,7 +2258,11 @@ function buildBackupFileName() {
 
   const now = new Date();
 
-  const datePart = now.toISOString().slice(0, 10);
+  const datePart = [
+		now.getFullYear(),
+		String(now.getMonth() + 1).padStart(2, "0"),
+		String(now.getDate()).padStart(2, "0")
+	].join("-");
   const timePart = [
     String(now.getHours()).padStart(2, "0"),
     String(now.getMinutes()).padStart(2, "0"),
@@ -1972,6 +2600,1179 @@ for (let dayNumber = 1; dayNumber <= appState.calendar.daysInMonth; dayNumber +=
 }
 
 /* <------------------------------------------------
+      SINGLE RECIPE IMPORT SYSTEM
+   -------------------------------------------------> */
+
+function openSingleRecipeImportFilePicker() {
+
+  if (!DOM.importRecipeFileInput) {
+    return;
+  }
+
+  DOM.importRecipeFileInput.value = "";
+  DOM.importRecipeFileInput.click();
+
+}
+
+async function handleSingleRecipeImportFileSelection() {
+
+  const selectedFile = DOM.importRecipeFileInput?.files?.[0];
+
+  if (!selectedFile) {
+    return;
+  }
+
+  try {
+    const recipeText = await selectedFile.text();
+    const recipeImportData = JSON.parse(recipeText);
+
+    validateSingleRecipeImportData(recipeImportData);
+
+		const wasImported = await importSingleRecipe(recipeImportData.recipe);
+
+		if (wasImported) {
+			alert("Recipe imported successfully.");
+		}
+		
+		} catch (error) {
+    console.warn("Single recipe import failed validation.", error);
+    alert("This does not appear to be a valid Ultimate Meal Planner recipe file.");
+  }
+
+}
+
+function validateSingleRecipeImportData(recipeImportData) {
+
+  if (!recipeImportData || typeof recipeImportData !== "object") {
+    throw new Error("Recipe import data is missing or invalid.");
+  }
+
+  if (recipeImportData.exportType !== "single-recipe") {
+    throw new Error("Recipe import type is not supported.");
+  }
+
+  if (!recipeImportData.recipe || typeof recipeImportData.recipe !== "object") {
+    throw new Error("Recipe data is missing.");
+  }
+
+  if (!recipeImportData.recipe.title || typeof recipeImportData.recipe.title !== "string") {
+    throw new Error("Recipe title is missing.");
+  }
+
+  if (!Array.isArray(recipeImportData.recipe.categories)) {
+    throw new Error("Recipe categories are missing.");
+  }
+
+}
+
+async function importSingleRecipe(importedRecipe) {
+
+/* <------------------------------------------------
+      SINGLE RECIPE DUPLICATE CHECK
+   -------------------------------------------------> */
+
+const matchingRecipe = appState.recipes.find((recipe) => {
+
+  return (
+    recipe.title?.trim().toLowerCase() ===
+    importedRecipe.title?.trim().toLowerCase()
+  );
+
+});
+
+if (matchingRecipe) {
+
+  const confirmed = confirm(
+    `A recipe named "${importedRecipe.title}" already exists.\n\nImport another copy anyway?`
+  );
+
+  if (!confirmed) {
+    return false;
+  }
+
+}
+
+  const recipeToSave = {
+    ...importedRecipe,
+    id: crypto.randomUUID(),
+    title: importedRecipe.title,
+    categories: sanitizeRecipeCategories(importedRecipe.categories),
+    createdAt: new Date().toISOString()
+  };
+
+  const savedRecipe = await saveRecipeToDatabase(recipeToSave);
+
+  if (!savedRecipe) {
+    throw new Error("Imported recipe could not be saved.");
+  }
+
+  appState.recipes.push(savedRecipe);
+
+  sortRecipesByTitle();
+  renderRecipeBoxList();
+  renderAssignmentRecipeList();
+
+	return true;
+
+}
+
+/* <------------------------------------------------
+      CONVERSION CHART WINDOW SYSTEM
+   -------------------------------------------------> */
+
+function closeConversionChartDialog() {
+
+  if (!DOM.conversionChartDialog) {
+    return;
+  }
+
+  DOM.conversionChartDialog.close();
+
+}
+
+function renderConversionChart() {
+
+  if (!DOM.conversionChartBody) {
+    return;
+  }
+
+  DOM.conversionChartBody.innerHTML = "";
+
+  const conversionSections = [
+    {
+      title: "Teaspoons / Tablespoons",
+      rows: [
+        "3 tsp = 1 tbsp",
+        "1 tbsp = 3 tsp",
+        "4 tbsp = 1/4 cup",
+        "8 tbsp = 1/2 cup",
+        "16 tbsp = 1 cup"
+      ]
+    },
+    {
+      title: "Cups / Pints / Quarts / Gallons",
+      rows: [
+        "2 cups = 1 pint",
+        "4 cups = 1 quart",
+        "4 quarts = 1 gallon",
+        "16 cups = 1 gallon"
+      ]
+    },
+    {
+      title: "Ounces / Pounds",
+      rows: [
+        "16 oz = 1 lb",
+        "8 oz = 1/2 lb",
+        "4 oz = 1/4 lb"
+      ]
+    },
+    {
+      title: "Common Kitchen Notes",
+      rows: [
+        "1 stick butter = 1/2 cup",
+        "1 stick butter = 8 tbsp",
+        "1 cup = 16 tbsp",
+        "1/2 cup = 8 tbsp",
+        "1/4 cup = 4 tbsp"
+      ]
+    }
+  ];
+
+  conversionSections.forEach((section) => {
+
+    const sectionElement =
+      document.createElement("section");
+
+    sectionElement.className = "conversion-chart-section";
+
+    const sectionTitle =
+      document.createElement("h3");
+
+    sectionTitle.textContent = section.title;
+
+    const rowList =
+      document.createElement("ul");
+
+    rowList.className = "conversion-chart-list";
+
+    section.rows.forEach((rowText) => {
+
+      const rowItem =
+        document.createElement("li");
+
+      rowItem.textContent = rowText;
+
+      rowList.appendChild(rowItem);
+
+    });
+
+    sectionElement.appendChild(sectionTitle);
+    sectionElement.appendChild(rowList);
+
+    DOM.conversionChartBody.appendChild(sectionElement);
+
+  });
+
+}
+
+/* <------------------------------------------------
+      PANTRY WINDOW SYSTEM
+   -------------------------------------------------> */
+
+function closePantryDialog() {
+
+  if (!DOM.pantryDialog) {
+    return;
+  }
+
+  DOM.pantryDialog.close();
+
+}
+
+function renderPantryItemList() {
+
+  if (!DOM.pantryItemList) {
+    return;
+  }
+
+  DOM.pantryItemList.innerHTML = "";
+
+  const sortedPantryItems =
+    [...appState.pantryItems].sort((a, b) => {
+
+      return a.name.localeCompare(
+        b.name,
+        undefined,
+        {
+          sensitivity: "base"
+        }
+      );
+
+    });
+
+  sortedPantryItems.forEach((pantryItem) => {
+
+    const pantryRow =
+      document.createElement("div");
+
+    pantryRow.className = "pantry-item-row";
+		
+		    pantryRow.draggable = true;
+    pantryRow.dataset.pantryItemId = pantryItem.id;
+
+    pantryRow.addEventListener("dragstart", (event) => {
+
+      pantryRow.classList.add("dragging-pantry-item");
+
+      event.dataTransfer.setData(
+        "application/x-pantry-item",
+        pantryItem.id
+      );
+
+    });
+
+    pantryRow.addEventListener("dragend", () => {
+
+      pantryRow.classList.remove("dragging-pantry-item");
+
+    });
+
+    const pantryLabel =
+      document.createElement("label");
+
+    pantryLabel.className = "pantry-item-label";
+
+    const pantryCheckbox =
+      document.createElement("input");
+
+    pantryCheckbox.type = "checkbox";
+    pantryCheckbox.checked = Boolean(pantryItem.checked);
+
+    pantryCheckbox.addEventListener("change", async () => {
+
+      pantryItem.checked = pantryCheckbox.checked;
+
+      await savePantryItemToDatabase(
+        pantryItem
+      );
+
+      await regenerateCurrentShoppingListIfSaved();
+
+    });
+
+    const pantryName =
+      document.createElement("span");
+
+    pantryName.textContent = pantryItem.name;
+
+    pantryLabel.appendChild(pantryCheckbox);
+    pantryLabel.appendChild(pantryName);
+
+    pantryRow.appendChild(pantryLabel);
+
+    DOM.pantryItemList.appendChild(pantryRow);
+
+  });
+
+}
+
+/* <------------------------------------------------
+      PANTRY SHOPPING LIST AUTO UPDATE SYSTEM
+   -------------------------------------------------> */
+
+async function regenerateCurrentShoppingListIfSaved() {
+
+  const currentShoppingList =
+    appState.shoppingLists.find((shoppingList) => {
+      return shoppingList.id === getCurrentShoppingListId();
+    });
+
+  if (!currentShoppingList) {
+    return;
+  }
+
+  await generateShoppingListFromCalendar();
+
+}
+
+/* <------------------------------------------------
+      PANTRY DELETE ITEM SYSTEM
+   -------------------------------------------------> */
+
+async function deletePantryItem(pantryItemId) {
+
+  const pantryItem =
+    appState.pantryItems.find((item) => {
+      return item.id === pantryItemId;
+    });
+
+  if (!pantryItem) {
+    return;
+  }
+
+  const confirmed = confirm(
+    `Remove "${pantryItem.name}" from Pantry?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  appState.pantryItems =
+    appState.pantryItems.filter((item) => {
+      return item.id !== pantryItemId;
+    });
+
+  await deletePantryItemFromDatabase(
+    pantryItemId
+  );
+
+    renderPantryItemList();
+
+  await regenerateCurrentShoppingListIfSaved();
+
+}
+
+/* <------------------------------------------------
+      PANTRY ADD ITEM SYSTEM
+   -------------------------------------------------> */
+
+async function addPantryItemFromInput() {
+
+  if (!DOM.pantryItemInput) {
+    return;
+  }
+
+  const pantryItemName =
+    formatPantryDisplayName(
+      DOM.pantryItemInput.value
+    );
+
+  if (!pantryItemName) {
+    alert("Enter a pantry item name first.");
+    return;
+  }
+
+  const duplicateItem =
+    appState.pantryItems.find((pantryItem) => {
+
+      return normalizePantryTerm(pantryItem.name) ===
+        normalizePantryTerm(pantryItemName);
+
+    });
+
+  if (duplicateItem) {
+    alert("That pantry item already exists.");
+    return;
+  }
+	
+	  const moreSpecificMatchingItem =
+    appState.pantryItems.find((pantryItem) => {
+
+      const existingName =
+        normalizePantryTerm(pantryItem.name);
+
+      const newName =
+        normalizePantryTerm(pantryItemName);
+
+      return existingName !== newName &&
+        existingName.endsWith(` ${newName}`);
+
+    });
+
+  if (moreSpecificMatchingItem) {
+    alert(
+      `"${pantryItemName}" may be too general.\n\n"${moreSpecificMatchingItem.name}" already exists in your Pantry.\n\nPlease be more specific with this entry.`
+    );
+    return;
+  }
+
+  const newPantryItem = {
+    id: `pantry-${crypto.randomUUID()}`,
+    name: pantryItemName,
+    checked: false
+  };
+
+  const savedPantryItem =
+    await savePantryItemToDatabase(newPantryItem);
+
+  if (!savedPantryItem) {
+    alert("Pantry item could not be saved.");
+    return;
+  }
+
+  appState.pantryItems.push(savedPantryItem);
+
+  DOM.pantryItemInput.value = "";
+
+    renderPantryItemList();
+
+  await regenerateCurrentShoppingListIfSaved();
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST WINDOW SYSTEM
+   -------------------------------------------------> */
+
+function closeShoppingListDialog() {
+
+  if (!DOM.shoppingListDialog) {
+    return;
+  }
+
+  DOM.shoppingListDialog.close();
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST LOAD SYSTEM
+   -------------------------------------------------> */
+
+function loadCurrentShoppingListDisplay() {
+
+  const savedShoppingList = appState.shoppingLists.find((shoppingList) => {
+    return shoppingList.id === getCurrentShoppingListId();
+  });
+
+  if (!savedShoppingList || !Array.isArray(savedShoppingList.items)) {
+    clearShoppingListDisplay();
+    return;
+  }
+
+  renderShoppingListItems(savedShoppingList.items);
+
+}
+
+/* <------------------------------------------------
+      SHOPPING INGREDIENT NORMALIZATION SYSTEM
+   -------------------------------------------------> */
+
+function normalizeShoppingIngredientText(ingredientText) {
+
+	let normalizedText =
+		String(ingredientText || "")
+			.trim()
+			.replace(/[.,;:!?]+$/g, "")
+			.replace(/\s+/g, " ")
+			.replace(/\bof\b/gi, "")
+			.replace(/\s+/g, " ")
+			.trim();
+
+	normalizedText = normalizeShoppingUnits(
+		normalizedText
+	);
+	
+	normalizedText =
+		fixShoppingNonNumericPluralization(
+			normalizedText
+		);
+
+  const plainWaterPattern =
+    /^(?:(?:\d+(?:\.\d+)?|\d+\/\d+|several|some|a|an)\s+)?(?:(?:cups?|tbsp|tablespoons?|tsp|teaspoons?|oz|ounces?|lb|lbs|pounds?|quarts?|gallons?)\s+)?water$/i;
+
+  if (plainWaterPattern.test(normalizedText)) {
+    return "";
+  }
+
+  return normalizedText;
+
+}
+
+function normalizeShoppingUnits(ingredientText) {
+
+  return ingredientText
+    .replace(/\bteaspoons?\b/gi, "tsp")
+    .replace(/\btablespoons?\b/gi, "tbsp")
+    .replace(/\bcups\b/gi, "cups")
+		.replace(/\bcup\b/gi, "cup")
+    .replace(/\bpounds?\b/gi, "lb")
+    .replace(/\blbs\b/gi, "lb")
+    .replace(/\bounces?\b/gi, "oz")
+    .replace(/\bquarts?\b/gi, "quart")
+    .replace(/\bgallons?\b/gi, "gallon")
+    .replace(/\s+/g, " ")
+    .trim();
+
+}
+
+/* <------------------------------------------------
+      PANTRY NORMALIZATION HELPERS
+   -------------------------------------------------> */
+
+function formatPantryDisplayName(text) {
+
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ")
+    .replace(/\b\w/g, (letter) => {
+      return letter.toUpperCase();
+    });
+
+}
+
+function normalizePantryTerm(text) {
+
+  return String(text || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[.,;:!?]+$/g, "")
+    .replace(/\s+/g, " ");
+
+}
+
+function ingredientMatchesPantryItem(
+  ingredientText,
+  pantryItemName
+) {
+
+  const normalizedIngredient =
+    normalizePantryTerm(
+      ingredientText
+    );
+
+  const normalizedPantryName =
+    normalizePantryTerm(
+      pantryItemName
+    );
+
+  const escapedPantryName =
+    normalizedPantryName.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      "\\$&"
+    );
+
+  const pantryWordPattern =
+    new RegExp(
+      `\\b${escapedPantryName}\\b`,
+      "i"
+    );
+
+  return pantryWordPattern.test(
+    normalizedIngredient
+  );
+
+}
+
+function fixShoppingNonNumericPluralization(ingredientText) {
+
+  const vagueAmountPattern =
+    /^(several|some|a few|a handful|a pinch|a touch)\s+(tsp|tbsp|cup|oz|lb|quart|gallon)\b/i;
+
+  return ingredientText.replace(
+    vagueAmountPattern,
+    (match, amountWord, unit) => {
+
+      const normalizedAmountWord =
+        amountWord
+          .toLowerCase()
+          .replace(/\b\w/g, (letter) => {
+            return letter.toUpperCase();
+          });
+
+      const displayUnit =
+        pluralizeShoppingUnit(unit.toLowerCase());
+
+      return `${normalizedAmountWord} ${displayUnit}`;
+
+    }
+  );
+
+}
+
+function parseShoppingIngredient(ingredientText) {
+
+  const amountUnitPattern =
+    /^(\d+(?:\.\d+)?|\d+\/\d+)\s+(tsp|tbsp|cup|oz|lb|quart|gallon)\s+(.+)$/i;
+
+  const match =
+    ingredientText.match(amountUnitPattern);
+
+  if (!match) {
+    return {
+      key: ingredientText.toLowerCase(),
+      label: ingredientText,
+      amount: null,
+      unit: "",
+      itemName: ingredientText,
+      count: 1
+    };
+  }
+
+  const amount =
+    parseShoppingAmount(match[1]);
+
+  const unit =
+    match[2].toLowerCase();
+
+  const itemName =
+    match[3].trim();
+
+  return {
+    key: `${unit}|${itemName.toLowerCase()}`,
+    label: ingredientText,
+    amount,
+    unit,
+    itemName,
+    count: 1
+  };
+
+}
+
+function parseShoppingAmount(amountText) {
+
+  if (amountText.includes("/")) {
+    const [numerator, denominator] =
+      amountText.split("/").map(Number);
+
+    if (denominator) {
+      return numerator / denominator;
+    }
+  }
+
+  return Number(amountText);
+
+}
+
+function combineShoppingIngredients(existingIngredient, parsedIngredient) {
+
+  if (!existingIngredient) {
+    return parsedIngredient;
+  }
+
+  if (
+    existingIngredient.amount !== null &&
+    parsedIngredient.amount !== null &&
+    existingIngredient.unit === parsedIngredient.unit &&
+    existingIngredient.itemName.toLowerCase() === parsedIngredient.itemName.toLowerCase()
+  ) {
+
+    const combinedAmount =
+      existingIngredient.amount + parsedIngredient.amount;
+
+    return {
+      ...existingIngredient,
+      amount: combinedAmount,
+      label: formatShoppingAmountLabel(
+        combinedAmount,
+        existingIngredient.unit,
+        existingIngredient.itemName
+      ),
+      count: existingIngredient.count + 1
+    };
+
+  }
+
+  return {
+    ...existingIngredient,
+    count: existingIngredient.count + 1
+  };
+
+}
+
+/* <------------------------------------------------
+      PANTRY SHOPPING RULE SYSTEM
+   -------------------------------------------------> */
+
+function applyPantryRulesToIngredient(
+  ingredientLabel
+) {
+
+  for (const pantryItem of appState.pantryItems) {
+
+    if (
+      !ingredientMatchesPantryItem(
+        ingredientLabel,
+        pantryItem.name
+      )
+    ) {
+      continue;
+    }
+
+    if (pantryItem.checked) {
+      return null;
+    }
+
+    return pantryItem.name;
+
+  }
+
+  return ingredientLabel;
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST UNIT ROLLUP SYSTEM
+   -------------------------------------------------> */
+
+function rollupShoppingMeasurement(amount, unit) {
+
+  const rollupRules = {
+    tsp: {
+      threshold: 3,
+      nextUnit: "tbsp"
+    },
+    tbsp: {
+      threshold: 16,
+      nextUnit: "cup"
+    },
+    cup: {
+      threshold: 4,
+      nextUnit: "quart"
+    },
+    quart: {
+      threshold: 4,
+      nextUnit: "gallon"
+    },
+    oz: {
+      threshold: 16,
+      nextUnit: "lb"
+    }
+  };
+
+  let rolledAmount = amount;
+  let rolledUnit = unit;
+
+  while (
+    rollupRules[rolledUnit] &&
+    rolledAmount >= rollupRules[rolledUnit].threshold
+  ) {
+
+    const rollupRule =
+      rollupRules[rolledUnit];
+
+    rolledAmount =
+      rolledAmount / rollupRule.threshold;
+
+    rolledUnit =
+      rollupRule.nextUnit;
+
+  }
+
+  return {
+    amount: rolledAmount,
+    unit: rolledUnit
+  };
+
+}
+
+function formatShoppingAmountLabel(amount, unit, itemName) {
+
+	const rolledMeasurement =
+		rollupShoppingMeasurement(
+			amount,
+			unit
+		);
+
+	const formattedAmount =
+		Number.isInteger(rolledMeasurement.amount)
+			? String(rolledMeasurement.amount)
+			: String(Number(rolledMeasurement.amount.toFixed(2)));
+
+	const displayUnit =
+		rolledMeasurement.amount === 1
+			? rolledMeasurement.unit
+			: pluralizeShoppingUnit(rolledMeasurement.unit);
+
+	return `${formattedAmount} ${displayUnit} ${itemName}`;
+
+}
+
+function pluralizeShoppingUnit(unit) {
+
+  const pluralUnits = {
+    tsp: "tsp",
+    tbsp: "tbsp",
+    cup: "cups",
+    oz: "oz",
+    lb: "lbs",
+    quart: "quarts",
+    gallon: "gallons"
+  };
+
+  return pluralUnits[unit] || unit;
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST GENERATION SYSTEM
+   -------------------------------------------------> */
+
+async function generateShoppingListFromCalendar() {
+
+  const monthData = getCurrentMonthWorkingData();
+  const ingredientMap = new Map();
+
+  for (let dayNumber = 1; dayNumber <= appState.calendar.daysInMonth; dayNumber += 1) {
+    const dayKey = String(dayNumber);
+    const meals = getDayMealSlots(monthData.days?.[dayKey]);
+
+    Object.values(meals).forEach((recipeId) => {
+      const recipe = getRecipeById(recipeId);
+
+      if (!recipe || !Array.isArray(recipe.ingredients)) {
+        return;
+      }
+
+      recipe.ingredients.forEach((ingredientText) => {
+				const cleanIngredient =
+					normalizeShoppingIngredientText(
+						ingredientText
+					);
+
+				if (!cleanIngredient) {
+					return;
+				}
+
+				const parsedIngredient =
+					parseShoppingIngredient(cleanIngredient);
+
+				const normalizedIngredient =
+					parsedIngredient.key;
+
+				const existingIngredient =
+					ingredientMap.get(normalizedIngredient);
+
+				ingredientMap.set(
+					normalizedIngredient,
+					combineShoppingIngredients(
+						existingIngredient,
+						parsedIngredient
+					)
+				);
+				
+				const pantryAdjustedLabel =
+					applyPantryRulesToIngredient(
+						ingredientMap
+							.get(normalizedIngredient)
+							.label
+					);
+
+				if (pantryAdjustedLabel === null) {
+					ingredientMap.delete(
+						normalizedIngredient
+					);
+					return;
+				}
+
+				ingredientMap.get(
+					normalizedIngredient
+				).label = pantryAdjustedLabel;
+
+      });
+    });
+  }
+
+const sortedShoppingItems =
+  Array
+    .from(ingredientMap.values())
+    .sort((a, b) => {
+
+      return a.label.localeCompare(
+        b.label,
+        undefined,
+        {
+          sensitivity: "base"
+        }
+      );
+
+    });
+
+	await saveGeneratedShoppingList(
+		sortedShoppingItems
+	);
+
+	loadCurrentShoppingListDisplay();
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST SAVE SYSTEM
+   -------------------------------------------------> */
+
+async function saveGeneratedShoppingList(shoppingItems) {
+
+  const monthName = getMonthName(appState.calendar.activeMonthIndex);
+  const year = appState.calendar.activeYear;
+
+  const shoppingListRecord = {
+    id: getCurrentShoppingListId(),
+    title: `${monthName} ${year} Shopping List`,
+    items: shoppingItems,
+    monthIndex: appState.calendar.activeMonthIndex,
+    year,
+    updatedAt: new Date().toISOString()
+  };
+
+  const savedShoppingList =
+    await saveShoppingListToDatabase(shoppingListRecord);
+
+  if (!savedShoppingList) {
+    alert("Shopping list could not be saved.");
+    return;
+  }
+
+  const existingIndex = appState.shoppingLists.findIndex((shoppingList) => {
+    return shoppingList.id === savedShoppingList.id;
+  });
+
+  if (existingIndex >= 0) {
+    appState.shoppingLists[existingIndex] = savedShoppingList;
+  } else {
+    appState.shoppingLists.push(savedShoppingList);
+  }
+
+	return savedShoppingList;
+
+}
+
+function getCurrentShoppingListId() {
+
+  return `shopping-list-${appState.calendar.activeYear}-${String(appState.calendar.activeMonthIndex + 1).padStart(2, "0")}`;
+
+}
+
+function renderShoppingListItems(shoppingItems) {
+
+  if (!DOM.shoppingListItems) {
+    return;
+  }
+
+  DOM.shoppingListItems.innerHTML = "";
+
+  if (!shoppingItems.length) {
+    const emptyMessage = document.createElement("p");
+
+    emptyMessage.className = "panel-note";
+    emptyMessage.textContent = "No shopping list has been generated yet.";
+
+    DOM.shoppingListItems.appendChild(emptyMessage);
+    return;
+  }
+
+  const itemList = document.createElement("ul");
+
+  itemList.className = "shopping-list-item-list";
+
+  shoppingItems.forEach((item) => {
+    const listItem = document.createElement("li");
+
+		listItem.textContent = item.label;
+
+    itemList.appendChild(listItem);
+  });
+
+  DOM.shoppingListItems.appendChild(itemList);
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST SHARE SYSTEM
+   -------------------------------------------------> */
+
+async function shareShoppingList() {
+
+  const currentShoppingList = appState.shoppingLists.find((shoppingList) => {
+    return shoppingList.id === getCurrentShoppingListId();
+  });
+
+  if (!currentShoppingList || !Array.isArray(currentShoppingList.items) || currentShoppingList.items.length === 0) {
+    alert("There is no shopping list to share.");
+    return;
+  }
+
+  const shoppingListText =
+    buildShoppingListShareText(currentShoppingList);
+
+  if (navigator.share) {
+
+    try {
+
+      await navigator.share({
+        title: currentShoppingList.title,
+        text: shoppingListText
+      });
+
+      return;
+
+    } catch (error) {
+
+      console.warn(
+        "Native shopping list share unavailable. Falling back to text download.",
+        error
+      );
+
+    }
+
+  }
+
+  downloadShoppingListTextFile(
+    currentShoppingList,
+    shoppingListText
+  );
+
+  alert(
+    "Native sharing is not supported on this device/browser.\n\nShopping list text file downloaded instead."
+  );
+
+}
+
+function buildShoppingListShareText(shoppingList) {
+
+	const lines = [
+		shoppingList.title || "Shopping List",
+		"",
+		"Items:",
+		""
+	];
+
+	shoppingList.items.forEach((item) => {
+
+		lines.push(`• ${item.label}`);
+
+	});
+
+  return lines.join("\n");
+
+}
+
+function downloadShoppingListTextFile(shoppingList, shoppingListText) {
+
+  const textBlob =
+    new Blob(
+      [shoppingListText],
+      {
+        type: "text/plain"
+      }
+    );
+
+  const downloadUrl =
+    URL.createObjectURL(textBlob);
+
+  const downloadLink =
+    document.createElement("a");
+
+  downloadLink.href = downloadUrl;
+  downloadLink.download =
+    buildShoppingListTextFileName(shoppingList);
+
+  document.body.appendChild(downloadLink);
+
+  downloadLink.click();
+
+  downloadLink.remove();
+
+  URL.revokeObjectURL(downloadUrl);
+
+}
+
+function buildShoppingListTextFileName(shoppingList) {
+
+  const safeTitle =
+    (shoppingList.title || "Shopping_List")
+      .replace(/[<>:"/\\|?*]+/g, "")
+      .trim()
+      .replace(/\s+/g, "_");
+
+  return `TUMP_${safeTitle}.txt`;
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST PRINT SYSTEM
+   -------------------------------------------------> */
+
+function printShoppingList() {
+
+  if (!DOM.shoppingListItems) {
+    return;
+  }
+
+  document.body.classList.add("printing-shopping-list");
+
+  window.print();
+
+  window.setTimeout(() => {
+    document.body.classList.remove("printing-shopping-list");
+  }, 500);
+
+}
+
+/* <------------------------------------------------
+      SHOPPING LIST CLEAR SYSTEM
+   -------------------------------------------------> */
+
+async function clearShoppingListDisplay() {
+
+  const shoppingListId =
+    getCurrentShoppingListId();
+
+  const existingIndex =
+    appState.shoppingLists.findIndex((shoppingList) => {
+
+      return shoppingList.id === shoppingListId;
+
+    });
+
+  if (existingIndex >= 0) {
+
+    appState.shoppingLists.splice(
+      existingIndex,
+      1
+    );
+
+  }
+
+  await deleteShoppingListFromDatabase(
+    shoppingListId
+  );
+
+  renderShoppingListItems([]);
+
+}
+
+/* <------------------------------------------------
       RECIPE BOX WINDOW SYSTEM
    -------------------------------------------------> */
 
@@ -2069,6 +3870,15 @@ function openRecipeViewDialog(recipeId) {
     DOM.recipeViewCategories.textContent = recipe.categories.join(", ");
   }
 
+  updateRecipeViewTimeDisplay(recipe);
+
+  if (DOM.recipeViewServings) {
+    DOM.recipeViewServings.textContent =
+      recipe.servings
+        ? `Servings: ${recipe.servings}`
+        : "";
+  }
+
   if (DOM.recipeViewIngredients) {
     DOM.recipeViewIngredients.innerHTML = "";
 
@@ -2093,12 +3903,55 @@ function openRecipeViewDialog(recipeId) {
       recipe.instructions || "No instructions have been added.";
   }
 
+  if (DOM.recipeViewNotes) {
+    DOM.recipeViewNotes.textContent =
+      recipe.notes || "No notes have been added.";
+  }
+
+  if (DOM.recipeViewNutrition) {
+    DOM.recipeViewNutrition.textContent =
+      recipe.nutrition || "No nutrition information has been added.";
+  }
+
   if (DOM.recipeViewSource) {
     DOM.recipeViewSource.textContent =
       recipe.sourceUrl || "No source URL has been added.";
   }
 
   openDialog(DOM.recipeViewDialog);
+}
+
+/* <------------------------------------------------
+      RECIPE VIEW TIME DISPLAY SYSTEM
+   -------------------------------------------------> */
+
+function updateRecipeViewTimeDisplay(recipe) {
+
+  const hasTimeData =
+    recipe.prepTime ||
+    recipe.cookTime ||
+    recipe.totalTime;
+
+  if (DOM.recipeViewTimeRow) {
+    DOM.recipeViewTimeRow.style.display =
+      hasTimeData ? "grid" : "none";
+  }
+
+  if (DOM.recipeViewPrepTime) {
+    DOM.recipeViewPrepTime.textContent =
+      recipe.prepTime ? `${recipe.prepTime} min` : "—";
+  }
+
+  if (DOM.recipeViewCookTime) {
+    DOM.recipeViewCookTime.textContent =
+      recipe.cookTime ? `${recipe.cookTime} min` : "—";
+  }
+
+  if (DOM.recipeViewTotalTime) {
+    DOM.recipeViewTotalTime.textContent =
+      recipe.totalTime ? `${recipe.totalTime} min` : "—";
+  }
+
 }
 
 function closeRecipeViewDialog() {
@@ -2197,8 +4050,24 @@ function openEditRecipeDialog(recipeId) {
   }
 	
 	if (DOM.recipeDescriptionInput) {
-  DOM.recipeDescriptionInput.value = recipe.description || "";
-  }
+		DOM.recipeDescriptionInput.value = recipe.description || "";
+	}
+
+	if (DOM.recipePrepTimeInput) {
+		DOM.recipePrepTimeInput.value = recipe.prepTime || "";
+	}
+
+	if (DOM.recipeCookTimeInput) {
+		DOM.recipeCookTimeInput.value = recipe.cookTime || "";
+	}
+
+	if (DOM.recipeTotalTimeInput) {
+		DOM.recipeTotalTimeInput.value = recipe.totalTime || "";
+	}
+
+	if (DOM.recipeServingsInput) {
+		DOM.recipeServingsInput.value = recipe.servings || "";
+	}
 
   if (DOM.recipeIngredientsInput) {
     DOM.recipeIngredientsInput.value = recipe.ingredients.join("\n");
@@ -2207,6 +4076,14 @@ function openEditRecipeDialog(recipeId) {
   if (DOM.recipeInstructionsInput) {
     DOM.recipeInstructionsInput.value = recipe.instructions || "";
   }
+
+	if (DOM.recipeNotesInput) {
+		DOM.recipeNotesInput.value = recipe.notes || "";
+	}
+
+	if (DOM.recipeNutritionInput) {
+		DOM.recipeNutritionInput.value = recipe.nutrition || "";
+	}
 
   if (DOM.recipeSourceUrlInput) {
     DOM.recipeSourceUrlInput.value = recipe.sourceUrl || "";
@@ -2239,8 +4116,32 @@ function clearRecipeForm() {
   }
 	
 	if (DOM.recipeDescriptionInput) {
-  DOM.recipeDescriptionInput.value = "";
-  }
+		DOM.recipeDescriptionInput.value = "";
+	}
+
+	if (DOM.recipePrepTimeInput) {
+		DOM.recipePrepTimeInput.value = "";
+	}
+
+	if (DOM.recipeCookTimeInput) {
+		DOM.recipeCookTimeInput.value = "";
+	}
+
+	if (DOM.recipeTotalTimeInput) {
+		DOM.recipeTotalTimeInput.value = "";
+	}
+
+	if (DOM.recipeServingsInput) {
+		DOM.recipeServingsInput.value = "";
+	}
+
+	if (DOM.recipeNotesInput) {
+		DOM.recipeNotesInput.value = "";
+	}
+
+	if (DOM.recipeNutritionInput) {
+		DOM.recipeNutritionInput.value = "";
+	}
 
   setRecipeCategoryCheckboxes(["Dinner"]);
 }
@@ -2280,13 +4181,19 @@ const selectedRecipeCategories = getSelectedRecipeCategories();
 const recipeData = {
   id: existingRecipeId || undefined,
   title: recipeTitle,
-		description: DOM.recipeDescriptionInput.value.trim(),
-		categories: selectedRecipeCategories,
-		ingredients: DOM.recipeIngredientsInput.value
+	description: DOM.recipeDescriptionInput.value.trim(),
+	prepTime: DOM.recipePrepTimeInput.value.trim(),
+	cookTime: DOM.recipeCookTimeInput.value.trim(),
+	totalTime: DOM.recipeTotalTimeInput.value.trim(),
+	servings: DOM.recipeServingsInput.value.trim(),
+	categories: selectedRecipeCategories,
+	ingredients: DOM.recipeIngredientsInput.value
       .split("\n")
       .map((ingredient) => ingredient.trim())
       .filter(Boolean),
     instructions: DOM.recipeInstructionsInput.value.trim(),
+	notes: DOM.recipeNotesInput.value.trim(),
+	nutrition: DOM.recipeNutritionInput.value.trim(),
     sourceUrl: DOM.recipeSourceUrlInput.value.trim(),
     createdAt: existingRecipe?.createdAt
   };
@@ -3234,20 +5141,20 @@ async function toggleDarkMode() {
   await saveSettingsToDatabase();
 }	 
 
-function togglePancakeMenu() {
-  if (!DOM.pancakeMenu) {
+function toggleHamburgerMenu() {
+  if (!DOM.hamburgerMenu) {
     return;
   }
 
-  DOM.pancakeMenu.classList.toggle("open");
+  DOM.hamburgerMenu.classList.toggle("open");
 }
 
-function closePancakeMenu() {
-  if (!DOM.pancakeMenu) {
+function closeHamburgerMenu() {
+  if (!DOM.hamburgerMenu) {
     return;
   }
 
-  DOM.pancakeMenu.classList.remove("open");
+  DOM.hamburgerMenu.classList.remove("open");
 }
 
 /* <------------------------------------------------
