@@ -1,11 +1,12 @@
 /* <------------------------------------------------
       THE ULTIMATE MEAL PLANNER
       FILE: app.js
-      VERSION: 1.00 Final
+      VERSION: 2.00
       CREDITS: Tre Thacker ~ 2026
       DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~
 
       JAVASCRIPT CHANGELOG:
+			VERSION 2.00 - Tablet Compatibility
       VERSION 1.00 Final - Initial JavaScript foundation created.
    -------------------------------------------------> */
 
@@ -14,7 +15,7 @@
    -------------------------------------------------> */
 
 const APP_TITLE = "The Ultimate Meal Planner";
-const APP_VERSION = "1.00 Final";
+const APP_VERSION = "2.00";
 const APP_CREDITS = "Tre Thacker ~ 2026";
 const APP_DEDICATION = "~~for my AMAZING wife, April, and my AWESOME mom, Sandii !~~";
 

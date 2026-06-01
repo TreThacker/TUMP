@@ -5,7 +5,7 @@
 
   "short_name": "Meal Planner",
 
-  "description": "Offline monthly meal calendar, recipe manager, shopping list, sharing, backups, pantry management, and print-ready meal planning app.",
+  "description": "Offline monthly meal calendar, recipe manager, shopping list, sharing, backups, pantry management, and print-ready meal planning app. PC and tablet supported.",
 
   "start_url": "./index.html",
 

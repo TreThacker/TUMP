@@ -12,7 +12,7 @@ Offline monthly meal planning, recipe management, shopping lists, pantry managem
 
 Plan monthly calendars, manage recipes, generate shopping lists, organize pantry items, backup your data, print calendars, and install the app directly to your device — all without subscriptions or cloud lock-in.
 
-Built to work offline and designed for desktop use today, with future mobile optimization planned.
+Built to work offline and designed for PC and tablet, with cell phone implementation in development. 
 
 ---
 
@@ -187,7 +187,7 @@ The app can then launch from:
 
 ### Android Install
 
-VERSION 1.00 FINAL is not recommended for Cell Phone use.
+VERSION 2.00 is not recommended for Cell Phone use.
 Future version will deploy cell phone compatibility.
 
 Open the app URL.
@@ -232,12 +232,12 @@ Once installed or loaded, the app can continue working without an internet conne
 
 * Windows 10
 * Google Chrome
+* Apple iPad
+* Safari
 
 ### Planned / In Progress
 
-* Android devices
-* Apple iPad
-* Additional tablet support
+* Cell Phones
 * Mobile responsive layouts
 
 ---
@@ -267,19 +267,15 @@ No subscriptions.
 
 ### Current Release
 
-**Version 1.00 Final**
+**Version 2.00**
 
 ### Planned Future Work
 
 * Mobile formatting / responsive layouts
-* Android optimization
-* iPad optimization
 * Cross-platform mobile support
-* Expanded pantry logic
-* Shopping list intelligence improvements
 * Additional convenience tools
 * UI refinements
-* Version 2.00 Mobile Compatibility + Deployment phase
+* Version 2.10 Cell Phone Compatibility + Deployment phase
 
 ---
 
@@ -307,7 +303,7 @@ for my AMAZING wife, April, and my AWESOME mom, Sandii!
 
 ## 📄 License
 
-License information coming soon.
+Licensing not available yet.
 
 ---
 

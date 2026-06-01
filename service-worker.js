@@ -1,15 +1,16 @@
 // <------------------------------------------------
       THE ULTIMATE MEAL PLANNER
       FILE: service-worker.js
-      VERSION: 1.00 Final
+      VERSION: 2.00 Final
       CREDITS: Tre Thacker ~ 2026
       DEDICATION: ~~for my AMAZING wife, April, and my AWESOME mom, Sandii!~~
 
       SERVICE WORKER CHANGELOG:
+			VERSION 2.00 - Tablet Compatibility			
       VERSION 1.00 Final - Initial service worker foundation created.
    -------------------------------------------------> //
 
-const CACHE_NAME = "ultimate-meal-planner-v1-00-final-fixed";
+const CACHE_NAME = "tump-cache-v2.00";
 
 const APP_SHELL_FILES = [
   "./",
