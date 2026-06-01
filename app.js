@@ -323,7 +323,9 @@ const appState = {
 	pantryItems: [],
 	selectedAssignmentDay: null,
 	viewedRecipeId: null,
-	pendingSlotChoice: null
+	pendingSlotChoice: null,
+	selectedTouchRecipeId: null,
+	selectedTouchSourceDayNumber: null
 };
 
 /* <------------------------------------------------
@@ -1463,8 +1465,11 @@ function connectBaseEventListeners() {
 		DOM.randomizeVarianceSlider.addEventListener("input", updateRandomizeVarianceDescription);
 	}
 	
-	if (DOM.assignmentTrashDropzone) {
-  DOM.assignmentTrashDropzone.addEventListener("dragover", (event) => {
+if (DOM.assignmentTrashDropzone) {
+
+	DOM.assignmentTrashDropzone.addEventListener("click", handleTouchTrashSelection);
+
+	DOM.assignmentTrashDropzone.addEventListener("dragover", (event) => {
     event.preventDefault();
     DOM.assignmentTrashDropzone.classList.add("drag-over-trash");
   });
@@ -2442,6 +2447,8 @@ function openAssignmentPanelForDay(dayNumber) {
 function closeAssignmentPanel() {
   appState.selectedAssignmentDay = null;
 
+  clearSelectedTouchRecipe();
+
   if (DOM.assignmentPanel) {
     DOM.assignmentPanel.classList.remove("open");
   }
@@ -2491,6 +2498,10 @@ function renderAssignmentRecipeList() {
 		recipeItem.draggable = true;
 		recipeItem.dataset.recipeId = recipe.id;
 
+		recipeItem.addEventListener("click", () => {
+			selectTouchRecipe(recipe.id, recipeItem);
+		});
+
 		recipeItem.addEventListener("dragstart", (event) => {
 			recipeItem.classList.add("dragging-sidebar-recipe");
 
@@ -2503,6 +2514,89 @@ function renderAssignmentRecipeList() {
 
 		DOM.assignmentRecipeList.appendChild(recipeItem);
   });
+}
+
+/* <------------------------------------------------
+      TABLET TOUCH ASSIGNMENT MODE
+   -------------------------------------------------> */
+
+function isTouchAssignmentMode() {
+
+  const hasTouchCapability =
+    navigator.maxTouchPoints > 0 ||
+    "ontouchstart" in window;
+
+  const hasCoarsePointer =
+    window.matchMedia("(any-pointer: coarse)").matches;
+
+  const isTabletSized =
+    window.innerWidth <= 1400;
+
+  const isLargeDesktopMouseDevice =
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
+    window.innerWidth > 1400;
+
+  return hasTouchCapability &&
+    (hasCoarsePointer || isTabletSized) &&
+    !isLargeDesktopMouseDevice;
+
+}
+
+function clearSelectedTouchRecipe() {
+
+  appState.selectedTouchRecipeId = null;
+  appState.selectedTouchSourceDayNumber = null;
+
+  document
+    .querySelectorAll(".touch-selected-recipe")
+    .forEach((recipeItem) => {
+      recipeItem.classList.remove("touch-selected-recipe");
+    });
+
+}
+
+function selectTouchRecipe(recipeId, recipeItemElement, sourceDayNumber = null) {
+
+  if (!isTouchAssignmentMode()) {
+    return;
+  }
+
+  clearSelectedTouchRecipe();
+
+  appState.selectedTouchRecipeId = recipeId;
+  appState.selectedTouchSourceDayNumber = sourceDayNumber;
+
+  recipeItemElement.classList.add("touch-selected-recipe");
+
+}
+
+async function assignSelectedTouchRecipeToDay(dayNumber) {
+
+  if (!isTouchAssignmentMode()) {
+    return false;
+  }
+
+  if (!appState.selectedTouchRecipeId) {
+    return false;
+  }
+
+  if (appState.selectedTouchSourceDayNumber) {
+    await moveRecipeToCalendarDay(
+      appState.selectedTouchSourceDayNumber,
+      dayNumber,
+      appState.selectedTouchRecipeId
+    );
+  } else {
+    await assignRecipeToCalendarDay(
+      dayNumber,
+      appState.selectedTouchRecipeId
+    );
+  }
+
+  clearSelectedTouchRecipe();
+
+  return true;
+
 }
 
 /* <------------------------------------------------
@@ -5009,6 +5103,31 @@ async function assignRecipeToCalendarDay(dayNumber, recipeId) {
 }
 
 /* <------------------------------------------------
+      TABLET TOUCH TRASH SYSTEM
+   -------------------------------------------------> */
+
+async function handleTouchTrashSelection() {
+
+  if (!isTouchAssignmentMode()) {
+    return;
+  }
+
+  if (!appState.selectedTouchRecipeId) {
+    return;
+  }
+
+  if (appState.selectedTouchSourceDayNumber) {
+    await removeRecipeFromCalendarDay(
+      appState.selectedTouchSourceDayNumber,
+      appState.selectedTouchRecipeId
+    );
+  }
+
+  clearSelectedTouchRecipe();
+
+}
+
+/* <------------------------------------------------
       42 CELL CALENDAR GRID RENDERING
    -------------------------------------------------> */
 
@@ -5037,8 +5156,22 @@ function renderCalendarGrid() {
 		if (isActiveDay) {
 			dayCell.dataset.dayNumber = String(dayNumber);
 
-			dayCell.addEventListener("click", () => {
+			dayCell.addEventListener("click", async () => {
+
+				if (
+					isTouchAssignmentMode() &&
+					appState.selectedTouchRecipeId
+				) {
+					const wasTouchAssigned =
+						await assignSelectedTouchRecipeToDay(dayNumber);
+
+					if (wasTouchAssigned) {
+						return;
+					}
+				}
+
 				openAssignmentPanelForDay(dayNumber);
+
 			});
 			
 		dayCell.addEventListener("dragover", (event) => {
@@ -5094,6 +5227,22 @@ function renderCalendarGrid() {
 				recipeName.dataset.recipeId = slotEntry.recipeId;
 				recipeName.dataset.dayNumber = String(dayNumber);
 				recipeName.dataset.categoryName = slotEntry.categoryName;
+
+				recipeName.addEventListener("click", (event) => {
+
+					if (!isTouchAssignmentMode()) {
+						return;
+					}
+
+					event.stopPropagation();
+
+					selectTouchRecipe(
+						slotEntry.recipeId,
+						recipeName,
+						dayNumber
+					);
+
+				});
 
 				recipeName.addEventListener("dragstart", (event) => {
 					event.stopPropagation();

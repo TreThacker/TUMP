@@ -2597,6 +2597,38 @@ body.dark-mode .day-number {
 
 }
 
+/* <------------------------------------------------
+      TABLET TOUCH ASSIGNMENT SELECTION
+   -------------------------------------------------> */
+
+.assignment-recipe-item.touch-selected-recipe {
+
+  padding: 6px 8px;
+
+  border: 2px solid var(--theme-primary);
+  border-radius: 8px;
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+}
+
+/* <------------------------------------------------
+      TABLET TOUCH CALENDAR MEAL SELECTION
+   -------------------------------------------------> */
+
+.calendar-meal-name.touch-selected-recipe {
+
+  padding: 3px 5px;
+
+  border: 2px solid var(--theme-primary);
+  border-radius: 6px;
+
+  background: var(--theme-primary);
+  color: var(--button-text);
+
+}
+
 body.assignment-panel-open .calendar-section {
 
   width: calc(100% - 250px);
