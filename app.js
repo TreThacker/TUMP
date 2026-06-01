@@ -323,7 +323,8 @@ const appState = {
 	pantryItems: [],
 	selectedAssignmentDay: null,
 	viewedRecipeId: null,
-	pendingSlotChoice: null
+	pendingSlotChoice: null,
+	selectedTouchRecipeId: null
 };
 
 /* <------------------------------------------------
@@ -2442,6 +2443,8 @@ function openAssignmentPanelForDay(dayNumber) {
 function closeAssignmentPanel() {
   appState.selectedAssignmentDay = null;
 
+  clearSelectedTouchRecipe();
+
   if (DOM.assignmentPanel) {
     DOM.assignmentPanel.classList.remove("open");
   }
@@ -2491,6 +2494,10 @@ function renderAssignmentRecipeList() {
 		recipeItem.draggable = true;
 		recipeItem.dataset.recipeId = recipe.id;
 
+		recipeItem.addEventListener("click", () => {
+			selectTouchRecipe(recipe.id, recipeItem);
+		});
+
 		recipeItem.addEventListener("dragstart", (event) => {
 			recipeItem.classList.add("dragging-sidebar-recipe");
 
@@ -2503,6 +2510,63 @@ function renderAssignmentRecipeList() {
 
 		DOM.assignmentRecipeList.appendChild(recipeItem);
   });
+}
+
+/* <------------------------------------------------
+      TABLET TOUCH ASSIGNMENT MODE
+   -------------------------------------------------> */
+
+function isTouchAssignmentMode() {
+
+  return window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+
+}
+
+function clearSelectedTouchRecipe() {
+
+  appState.selectedTouchRecipeId = null;
+
+  document
+    .querySelectorAll(".assignment-recipe-item.touch-selected-recipe")
+    .forEach((recipeItem) => {
+      recipeItem.classList.remove("touch-selected-recipe");
+    });
+
+}
+
+function selectTouchRecipe(recipeId, recipeItemElement) {
+
+  if (!isTouchAssignmentMode()) {
+    return;
+  }
+
+  clearSelectedTouchRecipe();
+
+  appState.selectedTouchRecipeId = recipeId;
+
+  recipeItemElement.classList.add("touch-selected-recipe");
+
+}
+
+async function assignSelectedTouchRecipeToDay(dayNumber) {
+
+  if (!isTouchAssignmentMode()) {
+    return false;
+  }
+
+  if (!appState.selectedTouchRecipeId) {
+    return false;
+  }
+
+  await assignRecipeToCalendarDay(
+    dayNumber,
+    appState.selectedTouchRecipeId
+  );
+
+  clearSelectedTouchRecipe();
+
+  return true;
+
 }
 
 /* <------------------------------------------------
@@ -5037,8 +5101,17 @@ function renderCalendarGrid() {
 		if (isActiveDay) {
 			dayCell.dataset.dayNumber = String(dayNumber);
 
-			dayCell.addEventListener("click", () => {
+			dayCell.addEventListener("click", async () => {
+
+				const wasTouchAssigned =
+					await assignSelectedTouchRecipeToDay(dayNumber);
+
+				if (wasTouchAssigned) {
+					return;
+				}
+
 				openAssignmentPanelForDay(dayNumber);
+
 			});
 			
 		dayCell.addEventListener("dragover", (event) => {
