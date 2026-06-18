@@ -10,7 +10,7 @@
       VERSION 1.00 Final - Initial service worker foundation created.
    -------------------------------------------------> //
 
-const CACHE_NAME = "tump-cache-v2.00";
+const CACHE_NAME = "tump-cache2-v2.00";
 
 const APP_SHELL_FILES = [
   "./",
@@ -18,7 +18,12 @@ const APP_SHELL_FILES = [
   "./styles.css",
   "./app.js",
   "./manifest.json",
-  "./image/tump-icon.png"
+  "./image/tump-icon.png",
+	"image/icon/icon-16.png",
+	"image/icon/icon-32.png",
+	"image/icon/icon-192.png",
+	"image/icon/icon-512.png",
+	"image/icon/apple-touch-icon.png"
 ];
 
 self.addEventListener("install", (event) => {
